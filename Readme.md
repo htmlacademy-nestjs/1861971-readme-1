@@ -1,7 +1,7 @@
 # Личный проект «Readme»
 
 * Студент: [Владислав Ваньков](https://up.htmlacademy.ru/nodejs-2-individual/1/user/1861971).
-* Наставник: `Неизвестно`.
+* Наставник: [Владислав Поклонский](https://htmlacademy.ru/profile/id2210683).
 
 ---
 
