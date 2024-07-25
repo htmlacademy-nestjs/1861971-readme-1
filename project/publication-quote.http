@@ -1,0 +1,31 @@
+# Publication a new quote
+POST http://localhost:3000/api/quote/publication HTTP/1.1
+Content-Type: application/json
+
+{
+  "textQuote": "Это было не забываемо. Советую",
+  "setTag": "#Горы",
+  "authorQuote": "Vlad"
+}
+
+###
+
+# Get quote by ID
+GET http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
+
+###
+
+# Delete quote by ID
+DELETE  http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
+
+###
+
+# Upgrade quote by ID
+PATCH   http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
+Content-Type: application/json
+
+{
+  "textQuote": "Это было не забываемо в горах Архыза. Советую",
+  "setTag": "#Горы, #Архыз",
+  "authorQuote": "Vlad"
+}
