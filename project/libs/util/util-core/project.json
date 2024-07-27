@@ -1,0 +1,9 @@
+{
+  "name": "util-core",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/util/util-core/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project util-core --web",
+  "targets": {}
+}

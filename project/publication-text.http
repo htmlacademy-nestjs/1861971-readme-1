@@ -1,0 +1,35 @@
+# Publication a new text
+POST http://localhost:3000/api/text/publication HTTP/1.1
+Content-Type: application/json
+
+{
+  "namePublication": "Я в гор",
+  "announcementPublication": "Как провел отпуск в горной Архызе",
+  "textPublication": "Это было не забываемо. Советую",
+  "setTag": "#Горы",
+  "authorPublication": "Serg"
+}
+
+###
+
+# Get text by ID
+GET http://localhost:3000/api/text/db7daefa-df60-4b9a-906f-97eeddc0bb09 HTTP/1.1
+
+###
+
+# Delete text by ID
+DELETE  http://localhost:3000/api/text/db7daefa-df60-4b9a-906f-97eeddc0bb09 HTTP/1.1
+
+###
+
+# Upgrade text by ID
+PATCH   http://localhost:3000/api/text/55f7deeb-fa8b-4c2e-ac49-883058994137 HTTP/1.1
+Content-Type: application/json
+
+{
+  "namePublication": "Я среди гор",
+  "announcementPublication": "Как провел выходные в Домбай",
+  "textPublication": "Это было не забываемо, много горных экотроп. Советую",
+  "setTag": "#Горы",
+  "authorPublication": "Vlad"
+}

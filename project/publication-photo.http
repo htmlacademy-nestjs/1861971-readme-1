@@ -1,0 +1,31 @@
+# Publication a new photo
+POST http://localhost:3000/api/photo/publication HTTP/1.1
+Content-Type: application/json
+
+{
+  "photo": "photo.jpg",
+  "setTag": "#Горы",
+  "authorPhoto": "Nina"
+}
+
+###
+
+# Get photo by ID
+GET http://localhost:3000/api/photo/9bbd4bf9-4055-402f-bddc-6cbaa352fea1 HTTP/1.1
+
+###
+
+# Delete photo by ID
+DELETE  http://localhost:3000/api/photo/3e401daa-6c35-4cf7-9b7d-8c89127c6f19 HTTP/1.1
+
+###
+
+# Upgrade photo by ID
+PATCH   http://localhost:3000/api/photo/6669884c-327c-4960-98d7-7f898707172b HTTP/1.1
+Content-Type: application/json
+
+{
+  "photo": "mountains.jpg",
+  "setTag": "#Горы, #Архыз",
+  "authorPhoto": "Vlad"
+}
