@@ -1,6 +1,6 @@
 import {ConflictException, NotFoundException, Injectable } from '@nestjs/common';
 
-import { BlogUserMemoryRepository } from '../blog-user/blog-user-memory.repository';
+import { BlogUserRepository } from '../blog-user/blog-user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ValueRegistration } from './registration.enum';
 import { BlogUserEntity } from '../blog-user/blog-user-entity';
@@ -9,12 +9,12 @@ import { BlogUserEntity } from '../blog-user/blog-user-entity';
 export class RegistrationService {
 
   constructor(
-    private readonly blogUserMemoryRepository: BlogUserMemoryRepository
+    private readonly blogUserRepository: BlogUserRepository
   ){}
 
   public async register(dto: CreateUserDto) {
 
-    const existUser = await this.blogUserMemoryRepository
+    const existUser = await this.blogUserRepository
       .findByEmail(dto.email);
 
     if (existUser) {
@@ -22,14 +22,14 @@ export class RegistrationService {
     }
 
     const userEntity = await new BlogUserEntity(dto)
-      .setPassword(dto.password)
+    .setPassword(dto.password);
 
-    return this.blogUserMemoryRepository
+    return this.blogUserRepository
       .create(userEntity);
   }
 
   public async getUser(id: string) {
-    const existUser = await this.blogUserMemoryRepository
+    const existUser = await this.blogUserRepository
       .findById(id);
 
     if (! existUser) {
