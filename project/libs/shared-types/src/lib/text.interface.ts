@@ -1,7 +1,7 @@
-import { VideoState } from './video-state.enum';
+import { Comment } from './comment.interface';
 
 export interface Text {
-  id?: string
+  id?: number
   namePublication: string;
   announcementPublication: string;
   textPublication: string;
@@ -9,10 +9,10 @@ export interface Text {
   authorPublication: string;
   typePublication?: string;
   countLike?: number;
-  countComments?: string[];
-  dateCreation?: string;
-  datePublication?: string;
-  state?: VideoState;
+  comments?: Comment[];
+  dateCreation?: Date;
+  datePublication?: Date;
+  state?: string;
   originolAuthor?: string | boolean;
   repost?: string | boolean;
   originolId?: string | boolean;

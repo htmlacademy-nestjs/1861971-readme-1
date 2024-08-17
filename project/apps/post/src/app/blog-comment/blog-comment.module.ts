@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { BlogCommentMemoryRepository } from './blog-comment-memory-repository';
+import { BlogCommentRepository } from './blog-comment.repository';
 
 @Module({
-  providers: [BlogCommentMemoryRepository],
-  exports: [BlogCommentMemoryRepository]
+  providers: [BlogCommentRepository],
+  exports: [BlogCommentRepository]
 })
 export class BlogCommentModule {}

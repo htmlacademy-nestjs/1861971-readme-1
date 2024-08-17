@@ -1,7 +1,10 @@
+import {Prisma} from "@prisma/client";
+
 import { Comment } from "@project/shared-types";
+import { Publication } from "../publication-comment/dto/id-list.dto";
 
 export interface CommentInterface {
   create(dto: Comment): Promise<Comment>;
-  findById(idList: string[]): Promise<Comment[]>;
-  destroy(idList: string[]): Promise<void>;
+  findById(idPost: number, count: number): Promise<Comment[] | []>;
+  destroy(idList: Publication): Promise<Prisma.BatchPayload>;
 }

@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../../../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Comment {
+  id Int @id @default(autoincrement()) @map("id_comment")
+  text String @default("")
+  authorComment String @default("") @map("author_comment")
+  dateCreation DateTime @default(now()) @map("date_creation")
+  video Video @relation(fields: [idVideo], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idVideo Int @map("id_video")
+  word Text @relation(fields: [idText], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idText Int @map("id_text")
+
+  @@map("comments")
+}
+
+model Video {
+  id Int @id @default(autoincrement()) @map("id_video")
+  namePublication String @default("") @map("name_publication")
+  linkVideo String @default("") @map("link_video")
+  setTag String @default("") @map("set_tag")
+  authorPublication String @default("") @map("author_publication")
+  typePublication String @default("video") @map("type_publication")
+  countLike Int @default(0) @map("count_like")
+  comments Comment[]
+  dateCreation DateTime @default(now()) @map("date_creation")
+  datePublication DateTime @default(now()) @updatedAt @map("date_publication")
+  state String @default("Опубликована")
+  originolAuthor String @default("") @map("originol_author")
+  repost String @default("")
+  originolId String @default("") @map("originol_id")
+
+  @@map("video")
+}
+
+model Text {
+  id Int @id @default(autoincrement()) @map("id_text")
+  namePublication String @default("") @map("name_publication")
+  announcementPublication String @default("") @map("announcement_publication")
+  textPublication String @default("") @map("text_publication")
+  setTag String @default("") @map("set_tag")
+  authorPublication String @default("") @map("author_publication")
+  typePublication String @default("text") @map("type_publication")
+  countLike Int @default(0) @map("count_like")
+  comments Comment[]
+  dateCreation DateTime @default(now()) @map("date_creation")
+  datePublication DateTime @default(now()) @updatedAt @map("date_publication")
+  state String @default("Опубликована")
+  originolAuthor String @default("") @map("originol_author")
+  repost String @default("")
+  originolId String @default("") @map("originol_id")
+
+  @@map("texts")
+}
+
+model Quote {
+  id Int @id @default(autoincrement()) @map("id_quote")
+  textQuote String @default("") @map("text_quote")
+  setTag String @default("") @map("set_tag")
+  authorQuote String @default("") @map("author_quote")
+  typePublication String  @default("quote") @map("type_publication")
+  countLike Int @default(0) @map("count_like")
+  dateCreation DateTime @default(now()) @map("date_creation")
+  datePublication DateTime @default(now()) @updatedAt @map("date_publication")
+  state String @default("Опубликована")
+  originolAuthor String @default("") @map("originol_author")
+  repost String @default("")
+  originolId String @default("") @map("originol_id")
+
+  @@map("quotes")
+}
+
+model Photo {
+  id Int @id @default(autoincrement()) @map("id_photo")
+  photoString String @default("") @map("photo_string")
+  setTag String @default("") @map("set_tag")
+  authorPhoto String @default("") @map("author_photo")
+  typePublication String  @default("photo") @map("type_publication")
+  countLike Int @default(0) @map("count_like")
+  dateCreation DateTime @default(now()) @map("date_creation")
+  datePublication DateTime @default(now()) @updatedAt @map("date_publication")
+  state String @default("Опубликована")
+  originolAuthor String @default("") @map("originol_author")
+  repost String @default("")
+  originolId String @default("") @map("originol_id")
+
+  @@map("photos")
+}
+
+model Link {
+  id Int @id @default(autoincrement()) @map("id_photo")
+  link String @default("")
+  description String @default("")
+  setTag String @default("") @map("set_tag")
+  authorLink String @default("") @map("author_link")
+  typePublication String @default("photo") @map("type_publication")
+  countLike Int @default(0) @map("count_like")
+  dateCreation DateTime @default(now()) @map("date_creation")
+  datePublication DateTime @default(now()) @updatedAt @map("date_publication")
+  state String @default("Опубликована")
+  originolAuthor String @default("") @map("originol_author")
+  repost String @default("")
+  originolId String @default("") @map("originol_id")
+
+  @@map("links")
+}

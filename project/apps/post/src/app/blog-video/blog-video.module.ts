@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { BlogVideoMemoryRepository } from './blog-video-memory-repository';
+import { BlogVideoRepository } from './blog-video.repository';
 
 @Module({
-  providers: [BlogVideoMemoryRepository],
-  exports: [BlogVideoMemoryRepository]
+  providers: [BlogVideoRepository],
+  exports: [BlogVideoRepository]
 })
 export class BlogVideoModule {}

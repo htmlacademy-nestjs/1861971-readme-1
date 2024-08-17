@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 
 import { BlogQuoteMemoryRepository } from '../blog-quote/blog-quote-memory-repository';
-import { BlogCommentMemoryRepository } from '../blog-comment/blog-comment-memory-repository';
+import { BlogCommentRepository } from '../blog-comment/blog-comment.repository';
 import { CreateQuoteDto } from './dto/creat-quote.dto';
 import { BlogQuoteEntity } from '../blog-quote/blog-quote-entity';
 import { ValuePublicationQuote } from './publication.enum';
@@ -11,7 +11,7 @@ import {Quote} from '@project/shared-types';
 export class PublicationQuoteService {
   constructor(
     private readonly blogQuoteMemoryRepository: BlogQuoteMemoryRepository,
-    private readonly blogCommentMemoryRepository: BlogCommentMemoryRepository
+    private readonly blogCommentRepository: BlogCommentRepository
   ){}
 
   public async create(dto: CreateQuoteDto) {
@@ -34,8 +34,7 @@ export class PublicationQuoteService {
   }
 
   public async delete(id: string) {
-    const idList = await this.blogQuoteMemoryRepository.destroy(id);
-    await this.blogCommentMemoryRepository.destroy(idList);
+    await this.blogQuoteMemoryRepository.destroy(id);
   }
 
 public async update(dataText: Quote) {

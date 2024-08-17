@@ -27,24 +27,20 @@ export class PublicationController {
 
   @Get(':id')
   public async show(@Param('id') id: string) {
-    const detaileAboutVideo = await this.publicationService.show(id);
+    const detaileAboutVideo = await this.publicationService.show(Number(id));
     return detaileAboutVideo;
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string) {
-    await this.publicationService.delete(id);
+    const informationDeleteVideo = await this.publicationService.delete(Number(id));
+    return informationDeleteVideo
   }
 
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateVideoDto) {
 
-    const dataVideo = {
-      ...dto,
-      id: id
-    }
-
-    const editedVideo = await this.publicationService.update(dataVideo);
+    const editedVideo = await this.publicationService.update(Number(id), dto);
     return fillObject(DetailsVideoRdo, editedVideo);
   }
 }

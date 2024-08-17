@@ -27,24 +27,20 @@ export class PublicationTextController {
 
   @Get(':id')
   public async show(@Param('id') id: string) {
-    const detaileAboutText = await this.publicationTextService.show(id);
+    const detaileAboutText = await this.publicationTextService.show(Number(id));
     return detaileAboutText
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string) {
-    await this.publicationTextService.delete(id);
+    const informationDeleteText = await this.publicationTextService.delete(Number(id));
+    return informationDeleteText
   }
 
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateTextDto) {
 
-    const dataText = {
-      ...dto,
-      id: id
-    }
-
-    const editedText = await this.publicationTextService.update(dataText);
+    const editedText = await this.publicationTextService.update(Number(id), dto);
     return fillObject(DetailsTextRdo, editedText);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 
 import { BlogLinkMemoryRepository } from '../blog-link/blog-link-memory-repository';
-import { BlogCommentMemoryRepository } from '../blog-comment/blog-comment-memory-repository';
+import { BlogCommentRepository } from '../blog-comment/blog-comment.repository';
 import { CreateLinkDto } from './dto/creat-link.dto';
 import { BlogLinkEntity } from '../blog-link/blog-photo-entity';
 import { ValuePublicationLink } from './publication.enum';
@@ -11,7 +11,7 @@ import {Link} from '@project/shared-types'
 export class PublicationLinkService {
   constructor(
     private readonly blogLinkMemoryRepository: BlogLinkMemoryRepository,
-    private readonly blogCommentMemoryRepository: BlogCommentMemoryRepository
+    private readonly blogCommentRepository: BlogCommentRepository
   ){}
 
   public async create(dto: CreateLinkDto) {
@@ -34,8 +34,7 @@ export class PublicationLinkService {
   }
 
   public async delete(id: string) {
-    const idList = await this.blogLinkMemoryRepository.destroy(id);
-    await this.blogCommentMemoryRepository.destroy(idList);
+    await this.blogLinkMemoryRepository.destroy(id);
   }
 
 public async update(dataLink: Link) {

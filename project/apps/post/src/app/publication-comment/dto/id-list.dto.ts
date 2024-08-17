@@ -1,4 +1,4 @@
-export class IdList {
-  public idList: string[];
-  public authorComment: string;
+export class Publication {
+  public idPost: number;
+  public authorComment?: string;
 }

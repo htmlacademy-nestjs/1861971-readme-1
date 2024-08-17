@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { BlogTextMemoryRepository } from './blog-text-memory-repository';
+import { BlogTextRepository } from './blog-text.repository';
 
 @Module({
-  providers: [BlogTextMemoryRepository],
-  exports: [BlogTextMemoryRepository]
+  providers: [BlogTextRepository],
+  exports: [BlogTextRepository]
 })
 export class BlogTextModule {}

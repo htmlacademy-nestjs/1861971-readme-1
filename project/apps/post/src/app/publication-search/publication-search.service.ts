@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
 
-import { BlogTextMemoryRepository } from '../blog-text/blog-text-memory-repository';
-import { BlogVideoMemoryRepository } from '../blog-video/blog-video-memory-repository';
+import { BlogTextRepository } from '../blog-text/blog-text.repository';
+import { BlogVideoRepository } from '../blog-video/blog-video.repository';
 import {
-  Video,
-  Text
+  //Video,
+  //Text
  } from '@project/shared-types';
 
 @Injectable()
 export class PublicationSearchService {
-  blogList: (BlogVideoMemoryRepository | BlogTextMemoryRepository)[];
+  blogList: (BlogVideoRepository | BlogTextRepository)[];
 
   constructor(
-    private readonly blogVideoMemoryRepository: BlogVideoMemoryRepository,
-    private readonly blogTextMemoryRepository: BlogTextMemoryRepository
+    private readonly blogVideoRepository: BlogVideoRepository,
+    private readonly blogTextMemoryRepository: BlogTextRepository
   ){
     this.blogList = [
-      this.blogVideoMemoryRepository,
+      this.blogVideoRepository,
       this.blogTextMemoryRepository
     ];
   }
-
+/*
   public async index(word: string) {
     const publicationList: (Video | Text)[] = [];
 
@@ -34,4 +34,5 @@ export class PublicationSearchService {
 
     return publicationList
   }
+    */
 }

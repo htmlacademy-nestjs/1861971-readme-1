@@ -12,22 +12,22 @@ Content-Type: application/json
 ###
 
 # Get video by ID
-GET http://localhost:3000/api/video/60f97cca-290d-41b4-9de1-56fce738a0ea HTTP/1.1
+GET http://localhost:3000/api/video/1 HTTP/1.1
 
 ###
 
 # Delete video by ID
-DELETE  http://localhost:3000/api/video/60f97cca-290d-41b4-9de1-56fce738a0ea HTTP/1.1
+DELETE  http://localhost:3000/api/video/1 HTTP/1.1
 
 ###
 
 # Upgrade video by ID
-PATCH   http://localhost:3000/api/video/815896a0-44a1-4d88-a35b-bef543322e98 HTTP/1.1
+PATCH   http://localhost:3000/api/video/1 HTTP/1.1
 Content-Type: application/json
 
 {
   "namePublication": "Я среди гор",
-  "linkVideo": "http://localhost: 4000/month",
+  "linkVideo": "http://localhost:4000/month",
   "setTag": "#Горы",
   "authorPublication": "Vlad"
 }
