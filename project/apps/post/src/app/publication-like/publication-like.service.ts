@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { BlogVideoRepository } from '../blog-video/blog-video.repository';
 import { BlogTextRepository } from '../blog-text/blog-text.repository';
-import { BlogQuoteMemoryRepository } from '../blog-quote/blog-quote-memory-repository';
-import { BlogPhotoMemoryRepository } from '../blog-photo/blog-photo-memory-repository';
-import { BlogLinkMemoryRepository } from '../blog-link/blog-link-memory-repository';
+import { BlogQuoteRepository } from '../blog-quote/blog-quote.repository';
+import { BlogPhotoRepository } from '../blog-photo/blog-photo.repository';
+import { BlogLinkRepository } from '../blog-link/blog-link.repository';
 import {
   TypePublication,
   Video,
@@ -32,18 +32,17 @@ export class PublicationLikeService {
   constructor(
     private readonly blogVideoRepository: BlogVideoRepository,
     private readonly blogTextRepository: BlogTextRepository,
-    private readonly blogQuoteMemoryRepository: BlogQuoteMemoryRepository,
-    private readonly blogPhotoMemoryRepository: BlogPhotoMemoryRepository,
-    private readonly blogLinkMemoryRepository: BlogLinkMemoryRepository
+    private readonly blogQuoteRepository: BlogQuoteRepository,
+    private readonly blogPhotoRepository: BlogPhotoRepository,
+    private readonly blogLinkRepository: BlogLinkRepository
   ){}
 
   public async show(parameter: LikeDto) {
     const {typePublication, nameUser, idPublication} = parameter;
 
     let dataPublication: Video | Text | Quote | Photo | Link;
-
+/*
     switch (typePublication) {
-      /*
       case TypePublication.Video:
         dataPublication = await this.blogVideoRepository
         .addLike({nameUser, idPublication});
@@ -69,7 +68,6 @@ export class PublicationLikeService {
           dataPublication,
           rdo: DetailsTextRdo
         };
-*/
       case TypePublication.Quote:
         dataPublication = await this.blogQuoteMemoryRepository
         .addLike({nameUser, idPublication});
@@ -109,5 +107,6 @@ export class PublicationLikeService {
           rdo: DetailsLinkRdo
         };
     };
+    */
   }
 }

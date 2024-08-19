@@ -27,24 +27,20 @@ export class PublicationPhotoController {
 
   @Get(':id')
   public async show(@Param('id') id: string) {
-    const detaileAboutPhoto = await this.publicationPhotoService.show(id);
+    const detaileAboutPhoto = await this.publicationPhotoService.show(Number(id));
     return detaileAboutPhoto
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string) {
-    await this.publicationPhotoService.delete(id);
+    const informationDeletePhoto = await this.publicationPhotoService.delete(Number(id));
+    return informationDeletePhoto
   }
 
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreatePhotoDto) {
 
-    const dataPhoto = {
-      ...dto,
-      id: id
-    }
-
-    const editedPhoto = await this.publicationPhotoService.update(dataPhoto);
+    const editedPhoto = await this.publicationPhotoService.update(Number(id), dto);
     return fillObject(DetailsPhotoRdo, editedPhoto);
   }
 }

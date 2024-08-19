@@ -13,16 +13,19 @@ Content-Type: application/json
 ###
 
 # Get text by ID
+# 1-это id Текст
 GET http://localhost:3000/api/text/1 HTTP/1.1
 
 ###
 
 # Delete text by ID
+# 1-это id Текст
 DELETE  http://localhost:3000/api/text/1 HTTP/1.1
 
 ###
 
 # Upgrade text by ID
+# 1-это id Текст
 PATCH   http://localhost:3000/api/text/1 HTTP/1.1
 Content-Type: application/json
 

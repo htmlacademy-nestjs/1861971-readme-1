@@ -3,28 +3,41 @@ import { Injectable } from '@nestjs/common';
 import {CRUDRepository} from '@project/util/util-types';
 import {
   Link,
-  Parameter,
-  defaultValues,
-  ParameterLike,
-  DataUser,
-  ParameterComment
-} from '@project/shared-types';
+  Parameter
+ } from '@project/shared-types';
 import { BlogLinkEntity } from './blog-photo-entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class BlogLinkMemoryRepository implements CRUDRepository<BlogLinkEntity, string, Link> {
-  private repositoryLink: Link[] = [];
-  private repositoryLike: DataUser[] = [];
+export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number, Link> {
+  constructor(private readonly prisma: PrismaService) {}
 
   public async create(item: BlogLinkEntity): Promise<Link> {
     const dataLink = { ...item.toObject()};
-    this.repositoryLink.push(dataLink);
+    const creatNewLink = await this.prisma.link.create({
+      data: {
+        ...dataLink,
+        comments: {
+          connect: []
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
 
-    return dataLink;
+    return creatNewLink;
   }
 
-  public async findById(id: string): Promise<Link> {
-    const existLink = this.repositoryLink.find((element) => element.id === id);
+  public async findById(linkId: number): Promise<Link | null> {
+    const existLink = await this.prisma.link.findUnique({
+      where: {
+        id: linkId
+      },
+      include: {
+        comments: true
+      }
+    })
 
     if (existLink) {
       return existLink;
@@ -33,69 +46,47 @@ export class BlogLinkMemoryRepository implements CRUDRepository<BlogLinkEntity, 
     return null;
   }
 
-  public async destroy(id: string): Promise<string[]> {
-    const index = this.repositoryLink.findIndex((element) => element.id === id);
-    const idList = this.repositoryLink[index].countComments;
+  public async destroy(linkId: number): Promise<Link> {
+    const informationDeleteLink = await this.prisma.link.delete({
+      where: {
+        id: linkId
+      }
+    })
 
-    this.repositoryLink = [
-      ...this.repositoryLink.slice(0, index),
-      ...this.repositoryLink.slice(index + 1),
-    ];
-
-    return idList
+    return informationDeleteLink
   }
 
-  public async update(_id, _passwordHash, data: Link): Promise<Link> {
-    const existLink = this.repositoryLink
-      .find((element) => element.id === data.id);
+  public async update(linkId: number, _passwordHash, data: BlogLinkEntity): Promise<Link> {
+    const dataLink = data.toObject();
+    const updateOldLink = await this.prisma.link.update({
+      where: {
+        id: linkId
+      },
+      data: {
+        ...dataLink
+      },
+      include: {
+        comments: true
+      }
+    })
 
-      if (! existLink) {
+      if (! updateOldLink) {
         return null
       }
 
-      const editedLink = {
-        ...data,
-        dateCreation: existLink.dateCreation,
-        datePublication: new Date().toISOString(),
-        state: existLink.state,
-        originolAuthor: existLink.originolAuthor,
-        repost: existLink.repost,
-        originolId: existLink.originolId
-      }
-
-      const index = this.repositoryLink.findIndex((element) => element.id === data.id);
-      this.repositoryLink = [
-        ...this.repositoryLink.slice(0, index),
-        editedLink,
-        ...this.repositoryLink.slice(index + 1),
-      ];
-
-      return editedLink
+      return updateOldLink
   }
 
   public async find(parameter: Parameter): Promise<Link[]> {
-    const {count, user} = parameter;
+    const {count, user, typeSort} = parameter;
 
-    const linkList: Link[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
-
-    if(nameUser) {
-      this.repositoryLink.forEach((element) => {
-      if(element.authorLink === user) {
-        linkList.push(element)
-      }
-    })}
-
-    if(! nameUser){
-      for(const element of this.repositoryLink){ linkList.push(element); }
-    }
-
-    linkList.slice(defaultValues.zero, Number(limit))
+    const linkList = this.prisma.link.findMany({
+      take: Number(count)
+    })
 
     return linkList;
   }
-
+/*
   public async addLike(parameter: ParameterLike): Promise<Link> {
     const {nameUser, idPublication} = parameter;
     let dataLink: Link
@@ -202,4 +193,5 @@ export class BlogLinkMemoryRepository implements CRUDRepository<BlogLinkEntity, 
 
     return indicator
   }
+    */
 }

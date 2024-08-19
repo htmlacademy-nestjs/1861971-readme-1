@@ -1,0 +1,9 @@
+# Get list publications
+GET http://localhost:3000/api/publications/list HTTP/1.1
+Content-Type: application/json
+
+{
+  "user": "",
+  "typeSort": "",
+  "typePublication": ""
+}

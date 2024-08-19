@@ -1,18 +1,17 @@
-import { VideoState } from './video-state.enum';
-import { TypePublication } from './type-publication.enum';
+import { Comment } from "./comment.interface";
 
 export interface Link {
-  id?: string
+  id?: number
   link: string;
   description: string;
   setTag: string;
   authorLink: string;
-  typePublication?: TypePublication;
+  typePublication?: string;
   countLike?: number;
-  countComments?: string[];
-  dateCreation?: string;
-  datePublication?: string;
-  state?: VideoState;
+  comments?: Comment[];
+  dateCreation?: Date;
+  datePublication?: Date;
+  state?: string;
   originolAuthor?: string | boolean;
   repost?: string | boolean;
   originolId?: string | boolean;

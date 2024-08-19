@@ -6,5 +6,5 @@ import { Publication } from "../publication-comment/dto/id-list.dto";
 export interface CommentInterface {
   create(dto: Comment): Promise<Comment>;
   findById(idPost: number, count: number): Promise<Comment[] | []>;
-  destroy(idList: Publication): Promise<Prisma.BatchPayload>;
+  destroy(dataPost: Publication): Promise<Prisma.BatchPayload>;
 }

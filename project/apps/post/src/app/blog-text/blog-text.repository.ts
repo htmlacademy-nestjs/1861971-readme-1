@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
 import { CRUDRepository } from '@project/util/util-types';
-import { Text } from '@project/shared-types';
+import {
+  Text,
+  Parameter
+ } from '@project/shared-types';
 import { BlogTextEntity } from './blog-text-entity';
 import { PrismaService } from '../prisma/prisma.service';
+import { defaultValues } from '@project/shared-types';
 
 @Injectable()
 export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number, Text> {
@@ -73,30 +77,31 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
 
       return updateOldText
   }
- /*
-  public async find(parameter: Parameter): Promise<Text[]> {
-    const {count, user} = parameter;
 
-    const textList: Text[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
+  public async findByWord(word: string): Promise<Text[] | []> {
+    const textList = await this.prisma.text.findMany({
+      where: {
+        namePublication: {
+          search: word
+        },
+      },
+      take: defaultValues.countSearch
+    })
 
-    if(nameUser) {
-      this.repositoryText.forEach((element) => {
-      if(element.authorPublication === user) {
-        textList.push(element)
-      }
-    })}
+    return textList
+  }
 
-    if(! nameUser){
-      for(const element of this.repositoryText){ textList.push(element); }
-      ;}
+  public async find(parameter: Parameter): Promise<Text[] | []> {
+    const {count, user, typeSort} = parameter;
 
-    textList.slice(defaultValues.zero, Number(limit))
+    const textList = this.prisma.text.findMany({
+      take: Number(count)
+    })
 
       return textList;
   }
 
+  /*
   public async addLike(parameter: ParameterLike): Promise<Text> {
     const {nameUser, idPublication} = parameter;
     let dataText: Text
@@ -202,20 +207,6 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
     })
 
     return indicator
-  }
-
-  public async findByWord(word: string): Promise<Text[]> {
-    const textList: Text[] = [];
-
-    this.repositoryText.forEach((value) => {
-
-      const {namePublication} = value;
-      if(namePublication.includes(word)) {
-        textList.push(value)
-      }
-    })
-
-    return textList
   }
     */
 }

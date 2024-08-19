@@ -11,16 +11,19 @@ Content-Type: application/json
 ###
 
 # Get quote by ID
-GET http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
+# 1-это id Цитата
+GET http://localhost:3000/api/quote/2 HTTP/1.1
 
 ###
 
 # Delete quote by ID
-DELETE  http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
+# 1-это id Цитата
+DELETE  http://localhost:3000/api/quote/2 HTTP/1.1
 
 ###
 
 # Upgrade quote by ID
+# 1-это id Цитата
 PATCH   http://localhost:3000/api/quote/39d23965-f227-4cf3-99b6-2189b650c683 HTTP/1.1
 Content-Type: application/json
 

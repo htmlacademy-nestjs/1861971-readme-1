@@ -27,24 +27,20 @@ export class PublicationQuoteController {
 
   @Get(':id')
   public async show(@Param('id') id: string) {
-    const detaileAboutQuote = await this.publicationQuoteService.show(id);
+    const detaileAboutQuote = await this.publicationQuoteService.show(Number(id));
     return detaileAboutQuote
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string) {
-    await this.publicationQuoteService.delete(id);
+    const informationDeleteQuote = await this.publicationQuoteService.delete(Number(id));
+    return informationDeleteQuote
   }
 
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateQuoteDto) {
 
-    const dataQuote = {
-      ...dto,
-      id: id
-    }
-
-    const editedQuote = await this.publicationQuoteService.update(dataQuote);
+    const editedQuote = await this.publicationQuoteService.update(Number(id), dto);
     return fillObject(DetailsQuoteRdo, editedQuote);
   }
 }

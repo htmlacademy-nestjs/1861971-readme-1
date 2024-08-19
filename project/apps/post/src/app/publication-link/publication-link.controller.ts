@@ -27,24 +27,20 @@ export class PublicationLinkController {
 
   @Get(':id')
   public async show(@Param('id') id: string) {
-    const detaileAboutLink = await this.publicationLinkService.show(id);
+    const detaileAboutLink = await this.publicationLinkService.show(Number(id));
     return detaileAboutLink
   }
 
   @Delete(':id')
   public async delete(@Param('id') id: string) {
-    await this.publicationLinkService.delete(id);
+    const informationDeleteLink = await this.publicationLinkService.delete(Number(id));
+    return informationDeleteLink
   }
 
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateLinkDto) {
 
-    const dataLink = {
-      ...dto,
-      id: id
-    }
-
-    const editedLink = await this.publicationLinkService.update(dataLink);
+    const editedLink = await this.publicationLinkService.update(Number(id), dto);
     return fillObject(DetailsLinkRdo, editedLink);
   }
 }

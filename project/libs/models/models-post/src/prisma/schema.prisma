@@ -4,6 +4,7 @@
 generator client {
   provider = "prisma-client-js"
   output = "../../../../../node_modules/.prisma/client"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -16,10 +17,16 @@ model Comment {
   text String @default("")
   authorComment String @default("") @map("author_comment")
   dateCreation DateTime @default(now()) @map("date_creation")
-  video Video @relation(fields: [idVideo], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  idVideo Int @map("id_video")
-  word Text @relation(fields: [idText], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  idText Int @map("id_text")
+  video Video? @relation(fields: [idVideo], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idVideo Int? @map("id_video")
+  word Text? @relation(fields: [idText], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idText Int? @map("id_text")
+  quote Quote? @relation(fields: [idQuote], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idQuote Int? @map("id_quote")
+  photo Photo? @relation(fields: [idPhoto], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idPhoto Int? @map("id_photo")
+  link Link? @relation(fields: [idLink], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  idLink Int? @map("id_link")
 
   @@map("comments")
 }
@@ -70,6 +77,7 @@ model Quote {
   authorQuote String @default("") @map("author_quote")
   typePublication String  @default("quote") @map("type_publication")
   countLike Int @default(0) @map("count_like")
+  comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
   state String @default("Опубликована")
@@ -82,11 +90,12 @@ model Quote {
 
 model Photo {
   id Int @id @default(autoincrement()) @map("id_photo")
-  photoString String @default("") @map("photo_string")
+  photo String @default("") @map("photo")
   setTag String @default("") @map("set_tag")
   authorPhoto String @default("") @map("author_photo")
   typePublication String  @default("photo") @map("type_publication")
   countLike Int @default(0) @map("count_like")
+  comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
   state String @default("Опубликована")
@@ -98,13 +107,14 @@ model Photo {
 }
 
 model Link {
-  id Int @id @default(autoincrement()) @map("id_photo")
+  id Int @id @default(autoincrement()) @map("id_link")
   link String @default("")
   description String @default("")
   setTag String @default("") @map("set_tag")
   authorLink String @default("") @map("author_link")
-  typePublication String @default("photo") @map("type_publication")
+  typePublication String @default("link") @map("type_publication")
   countLike Int @default(0) @map("count_like")
+  comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
   state String @default("Опубликована")

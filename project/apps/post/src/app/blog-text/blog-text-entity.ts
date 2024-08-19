@@ -1,7 +1,4 @@
-import {
-  Text,
-  defaultValues
-} from '@project/shared-types'
+import { Text } from '@project/shared-types'
 
 export class BlogTextEntity implements Text {
   public namePublication: string;
@@ -9,7 +6,6 @@ export class BlogTextEntity implements Text {
   public textPublication: string;
   public setTag: string;
   public authorPublication: string;
-  public countLike?: number;
   public originolAuthor: string;
   public repost: string;
   public originolId: string;
@@ -25,7 +21,6 @@ export class BlogTextEntity implements Text {
       textPublication: this.textPublication,
       setTag: this.setTag,
       authorPublication: this.authorPublication,
-      countLike: this.countLike,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
       originolId: this.originolId
@@ -38,7 +33,6 @@ export class BlogTextEntity implements Text {
     this.textPublication = dataText.textPublication;
     this.setTag = dataText.setTag;
     this.authorPublication = dataText.authorPublication;
-    this.countLike = defaultValues.zero;
     this.originolAuthor = '';
     this.repost = '';
     this.originolId = '';

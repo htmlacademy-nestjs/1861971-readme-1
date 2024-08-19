@@ -3,5 +3,6 @@ export const defaultValues = {
   zero: 0,
   one: 1,
   typeSort: 'datePublication',
-  commentCount: 50
+  commentCount: 50,
+  countSearch: 20
 };

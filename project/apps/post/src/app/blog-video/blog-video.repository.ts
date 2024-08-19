@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { CRUDRepository } from '@project/util/util-types';
-import { Video } from '@project/shared-types';
+import {
+  Video,
+  Parameter
+ } from '@project/shared-types';
 import { BlogVideoEntity } from './blog-video-entity';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -73,30 +76,30 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
 
       return updateOldVideo
   }
-/*
-  public async find(parameter: Parameter): Promise<Video[]> {
-    const {count, user} = parameter;
 
-    const videosList: Video[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
+  public async findByWord(word: string): Promise<Video[] | []> {
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        namePublication: {
+          search: word
+        },
+      },
+    })
 
-    if(nameUser) {
-      this.repositoryVideo.forEach((element) => {
-      if(element.authorPublication === user) {
-        videosList.push(element)
-      }
-    })}
+    return videosList
+  }
 
-    if(! nameUser){
-      for(const element of this.repositoryVideo){ videosList.push(element); }
-      ;}
+  public async find(parameter: Parameter): Promise<Video[] | []> {
+    const {count, user, typeSort} = parameter;
 
-    videosList.slice(defaultValues.zero, Number(limit))
+    const videosList = this.prisma.video.findMany({
+      take: Number(count)
+    })
 
       return videosList;
   }
 
+  /*
   public async addLike(parameter: ParameterLike): Promise<Video> {
     const {nameUser, idPublication} = parameter;
     let dataVideo: Video
@@ -203,19 +206,5 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
 
     return indicator
   }
-
-  public async findByWord(word: string): Promise<Video[]> {
-    const videosList: Video[] = [];
-
-    this.repositoryVideo.forEach((value) => {
-
-      const {namePublication} = value;
-      if(namePublication.includes(word)) {
-        videosList.push(value)
-      }
-    })
-
-    return videosList
-  }
-    */
+*/
 }

@@ -25,7 +25,23 @@ export class BlogCommentRepository implements CommentInterface {
   public async findById(idPost: number, count: number): Promise<Comment[] | []> {
     return await this.prisma.comment.findMany({
       where: {
-        idVideo: idPost
+        OR: [
+          {
+            idVideo: idPost
+          },
+          {
+            idText: idPost
+          },
+          {
+            idQuote: idPost
+          },
+          {
+            idPhoto: idPost
+          },
+          {
+            idLink: idPost
+          }
+        ]
       },
       take: count
     })
@@ -35,8 +51,26 @@ export class BlogCommentRepository implements CommentInterface {
     const {idPost, authorComment} = dataPost;
     const informationDeleteComments = await this.prisma.comment.deleteMany({
       where: {
-        idVideo: idPost,
-        authorComment: authorComment
+        OR: [
+          {
+            idVideo: idPost
+          },
+          {
+            idText: idPost
+          },
+          {
+            idQuote: idPost
+          },
+          {
+            idPhoto: idPost
+          },
+          {
+            idLink: idPost
+          }
+        ],
+        AND: {
+          authorComment: authorComment
+        }
       }
     })
 
