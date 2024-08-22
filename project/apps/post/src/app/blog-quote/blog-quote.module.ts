@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BlogQuoteMemoryRepository } from './blog-quote-memory-repository';
+import { BlogQuoteRepository } from './blog-quote.repository';
 
 @Module({
-  providers: [BlogQuoteMemoryRepository],
-  exports: [BlogQuoteMemoryRepository]
+  providers: [BlogQuoteRepository],
+  exports: [BlogQuoteRepository]
 })
 export class BlogQuoteModule {}

@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 
-import { BlogVideoMemoryRepository } from '../blog-video/blog-video-memory-repository';
-import { BlogCommentMemoryRepository } from '../blog-comment/blog-comment-memory-repository';
+import { BlogVideoRepository } from '../blog-video/blog-video.repository';
 import { CreateVideoDto } from './dto/creat-video.dto';
 import { BlogVideoEntity } from '../blog-video/blog-video-entity';
 import { ValuePublication } from './publication.enum';
@@ -10,20 +9,19 @@ import {Video} from '@project/shared-types';
 @Injectable()
 export class PublicationService {
   constructor(
-    private readonly blogVideoMemoryRepository: BlogVideoMemoryRepository,
-    private readonly blogCommentMemoryRepository: BlogCommentMemoryRepository
+    private readonly blogVideoRepository: BlogVideoRepository,
   ){}
 
   public async create(dto: CreateVideoDto) {
 
-    const videoEntity = await new BlogVideoEntity(dto)
+    const videoEntity = new BlogVideoEntity(dto)
 
-    return this.blogVideoMemoryRepository
+    return this.blogVideoRepository
       .create(videoEntity);
   }
 
-  public async show(id: string) {
-    const existVideo = await this.blogVideoMemoryRepository
+  public async show(id: number) {
+    const existVideo = await this.blogVideoRepository
       .findById(id);
 
     if (! existVideo) {
@@ -33,14 +31,17 @@ export class PublicationService {
     return existVideo
   }
 
-  public async delete(id: string) {
-    const idList = await this.blogVideoMemoryRepository.destroy(id);
-    await this.blogCommentMemoryRepository.destroy(idList);
+  public async delete(id: number) {
+    const informationDeleteVideo = await this.blogVideoRepository.destroy(id);
+
+    return informationDeleteVideo
 }
 
-public async update(dataVideo: Video) {
-  const editedVideo = await this.blogVideoMemoryRepository
-    .update(null, null, dataVideo);
+public async update(id: number, dataVideo: Video) {
+  const videoEntity =  new BlogVideoEntity(dataVideo);
+
+  const editedVideo = await this.blogVideoRepository
+    .update(id, null, videoEntity);
 
   if (! editedVideo) {
     throw new ConflictException(ValuePublication.VideoNotFound);

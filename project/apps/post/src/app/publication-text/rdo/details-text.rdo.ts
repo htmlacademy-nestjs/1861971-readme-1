@@ -27,7 +27,7 @@ export class DetailsTextRdo {
   countLike: number;
 
   @Expose()
-  countComments: number;
+  comments: number;
 
   @Expose()
   public datePublication: string;

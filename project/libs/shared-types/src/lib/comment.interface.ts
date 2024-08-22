@@ -1,6 +1,9 @@
 export interface Comment {
-  id?: string;
   text: string;
   authorComment: string;
-  dateCreation?: string;
+  idVideo?: number;
+  idText?: number;
+  idQuote?: number;
+  idPhoto?: number;
+  idLink?: number;
 }

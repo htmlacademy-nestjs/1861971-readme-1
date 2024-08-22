@@ -1,4 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Body
+} from '@nestjs/common';
 
 import { ParametersList } from '@project/shared-types';
 import { PublicationsListService } from './publications-list.service';
@@ -14,8 +19,8 @@ export class PublicationsListController {
   ){}
 
   @Get('list')
-  public async index(@Query() parameters: ParametersList) {
-    const publicationsList = await this.publicationsListService.index(parameters);
+  public async index(@Body() parameters: ParametersList, @Query() {count}: {count: string | undefined}) {
+    const publicationsList = await this.publicationsListService.index(parameters, count);
     return fillObject(DetailsPublicationRdo, publicationsList)
   }
 }

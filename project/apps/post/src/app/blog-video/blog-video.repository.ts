@@ -1,30 +1,43 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common';
 
-import {CRUDRepository} from '@project/util/util-types';
+import { CRUDRepository } from '@project/util/util-types';
 import {
   Video,
-  Parameter,
-  defaultValues,
-  ParameterLike,
-  ParameterComment,
-  DataUser
-} from '@project/shared-types';
+  Parameter
+ } from '@project/shared-types';
 import { BlogVideoEntity } from './blog-video-entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class BlogVideoMemoryRepository implements CRUDRepository<BlogVideoEntity, string, Video> {
-  private repositoryVideo: Video[] = [];
-  private repositoryLike: DataUser[] = [];
+export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, number, Video> {
+  constructor(private readonly prisma: PrismaService) {}
 
   public async create(item: BlogVideoEntity): Promise<Video> {
     const dataVideo = { ...item.toObject()};
-    this.repositoryVideo.push(dataVideo);
+    const creatNewVideo = await this.prisma.video.create({
+      data: {
+        ...dataVideo,
+        comments: {
+          connect: []
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
 
-    return dataVideo;
+    return creatNewVideo;
   }
 
-  public async findById(id: string): Promise<Video> {
-    const existVideo = this.repositoryVideo.find((video) => video.id === id);
+  public async findById(videoId: number): Promise<Video | null> {
+    const existVideo = await this.prisma.video.findUnique({
+      where: {
+        id: videoId
+      },
+      include: {
+        comments: true
+      }
+    })
 
     if (existVideo) {
       return existVideo;
@@ -33,72 +46,60 @@ export class BlogVideoMemoryRepository implements CRUDRepository<BlogVideoEntity
     return null;
   }
 
-  public async destroy(id: string): Promise<string[]> {
-    const index = this.repositoryVideo.findIndex((element) => element.id === id);
-    const idList = this.repositoryVideo[index].countComments;
+  public async destroy(videoId: number): Promise<Video> {
+    const informationDeleteVideo = await this.prisma.video.delete({
+      where: {
+        id: videoId
+      }
+    })
 
-    this.repositoryVideo = [
-      ...this.repositoryVideo.slice(defaultValues.zero, index),
-      ...this.repositoryVideo.slice(index + 1),
-    ];
-
-    return idList
+    return informationDeleteVideo
   }
 
-  public async update(_id, _passwordHash, data: Video): Promise<Video> {
-    const existVideo = this.repositoryVideo
-      .find((element) => element.id === data.id);
+  public async update(videoId: number, _passwordHash, data: BlogVideoEntity): Promise<Video> {
+    const dataViideo = data.toObject();
+    const updateOldVideo = await this.prisma.video.update({
+      where: {
+        id: videoId
+      },
+      data: {
+        ...dataViideo
+      },
+      include: {
+        comments: true
+      }
+    })
 
-      if (! existVideo) {
+      if (! updateOldVideo) {
         return null
       }
 
-      const editedVideo = {
-        ...data,
-        typePublication: existVideo.typePublication,
-        countLike: existVideo.countLike,
-        countComments: existVideo.countComments,
-        dateCreation: existVideo.dateCreation,
-        datePublication: new Date().toISOString(),
-        state: existVideo.state,
-        originolAuthor: existVideo.originolAuthor,
-        repost: existVideo.repost,
-        originolId: existVideo.originolId
-      }
-
-      const index = this.repositoryVideo.findIndex((element) => element.id === data.id);
-      this.repositoryVideo = [
-        ...this.repositoryVideo.slice(defaultValues.zero, index),
-        editedVideo,
-        ...this.repositoryVideo.slice(index + 1),
-      ];
-
-      return editedVideo
+      return updateOldVideo
   }
 
-  public async find(parameter: Parameter): Promise<Video[]> {
-    const {count, user} = parameter;
+  public async findByWord(word: string): Promise<Video[] | []> {
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        namePublication: {
+          search: word
+        },
+      },
+    })
 
-    const videosList: Video[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
+    return videosList
+  }
 
-    if(nameUser) {
-      this.repositoryVideo.forEach((element) => {
-      if(element.authorPublication === user) {
-        videosList.push(element)
-      }
-    })}
+  public async find(parameter: Parameter): Promise<Video[] | []> {
+    const {count, user, typeSort} = parameter;
 
-    if(! nameUser){
-      for(const element of this.repositoryVideo){ videosList.push(element); }
-      ;}
-
-    videosList.slice(defaultValues.zero, Number(limit))
+    const videosList = this.prisma.video.findMany({
+      take: Number(count)
+    })
 
       return videosList;
   }
 
+  /*
   public async addLike(parameter: ParameterLike): Promise<Video> {
     const {nameUser, idPublication} = parameter;
     let dataVideo: Video
@@ -205,18 +206,5 @@ export class BlogVideoMemoryRepository implements CRUDRepository<BlogVideoEntity
 
     return indicator
   }
-
-  public async findByWord(word: string): Promise<Video[]> {
-    const videosList: Video[] = [];
-
-    this.repositoryVideo.forEach((value) => {
-
-      const {namePublication} = value;
-      if(namePublication.includes(word)) {
-        videosList.push(value)
-      }
-    })
-
-    return videosList
-  }
+*/
 }

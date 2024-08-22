@@ -1,2 +1,0 @@
-# Get list publications
-GET http://localhost:3000/api/publications/list?count=1 HTTP/1.1

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BlogPhotoMemoryRepository } from './blog-photo-memory-repository';
+import { BlogPhotoRepository } from './blog-photo.repository';
 
 @Module({
-  providers: [BlogPhotoMemoryRepository],
-  exports: [BlogPhotoMemoryRepository]
+  providers: [BlogPhotoRepository],
+  exports: [BlogPhotoRepository]
 })
 export class BlogPhotoModule {}

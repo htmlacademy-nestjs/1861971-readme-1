@@ -12,17 +12,20 @@ Content-Type: application/json
 ###
 
 # Get link by ID
-GET http://localhost:3000/api/link/9cbb3239-8f8a-48f7-a572-e328bcb9b957 HTTP/1.1
+# 1-это id Ссылка
+GET http://localhost:3000/api/link/1 HTTP/1.1
 
 ###
 
 # Delete link by ID
-DELETE  http://localhost:3000/api/link/9cbb3239-8f8a-48f7-a572-e328bcb9b957 HTTP/1.1
+# 1-это id Ссылка
+DELETE  http://localhost:3000/api/link/1 HTTP/1.1
 
 ###
 
 # Upgrade link by ID
-PATCH   http://localhost:3000/api/link/9cbb3239-8f8a-48f7-a572-e328bcb9b957 HTTP/1.1
+# 1-это id Ссылка
+PATCH   http://localhost:3000/api/link/1 HTTP/1.1
 Content-Type: application/json
 
 {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { BlogTextMemoryRepository } from '../blog-text/blog-text-memory-repository';
-import { BlogVideoMemoryRepository } from '../blog-video/blog-video-memory-repository';
+import { BlogTextRepository } from '../blog-text/blog-text.repository';
+import { BlogVideoRepository } from '../blog-video/blog-video.repository';
 import {
   Video,
   Text
@@ -9,22 +9,22 @@ import {
 
 @Injectable()
 export class PublicationSearchService {
-  blogList: (BlogVideoMemoryRepository | BlogTextMemoryRepository)[];
+  blogList: (BlogVideoRepository | BlogTextRepository)[];
 
   constructor(
-    private readonly blogVideoMemoryRepository: BlogVideoMemoryRepository,
-    private readonly blogTextMemoryRepository: BlogTextMemoryRepository
+    private readonly blogVideoRepository: BlogVideoRepository,
+    private readonly blogTextRepository: BlogTextRepository
   ){
     this.blogList = [
-      this.blogVideoMemoryRepository,
-      this.blogTextMemoryRepository
+      this.blogVideoRepository,
+      this.blogTextRepository
     ];
   }
 
   public async index(word: string) {
     const publicationList: (Video | Text)[] = [];
 
-    for(const element of this.blogList) {
+    for await(const element of this.blogList) {
       const dataList = await element.findByWord(word);
 
       if(dataList.length !== 0) {

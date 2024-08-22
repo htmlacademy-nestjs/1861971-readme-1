@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 import { TypePublication } from '@project/shared-types';
 
@@ -25,7 +25,7 @@ export class DetailsVideoRdo {
   public countLike: number;
 
   @Expose()
-  public countComments: number;
+  public comments: number;
 
   @Expose()
   public datePublication: string;

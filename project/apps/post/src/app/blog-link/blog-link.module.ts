@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BlogLinkMemoryRepository } from './blog-link-memory-repository';
+import { BlogLinkRepository } from './blog-link.repository';
 
 @Module({
-  providers: [BlogLinkMemoryRepository],
-  exports: [BlogLinkMemoryRepository]
+  providers: [BlogLinkRepository],
+  exports: [BlogLinkRepository]
 })
 export class BlogLinkModule {}

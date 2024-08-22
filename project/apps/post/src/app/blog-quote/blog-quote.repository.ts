@@ -3,28 +3,41 @@ import { Injectable } from '@nestjs/common';
 import {CRUDRepository} from '@project/util/util-types';
 import {
   Quote,
-  Parameter,
-  defaultValues,
-  ParameterLike,
-  DataUser,
-  ParameterComment
+  Parameter
 } from '@project/shared-types';
 import { BlogQuoteEntity } from './blog-quote-entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class BlogQuoteMemoryRepository implements CRUDRepository<BlogQuoteEntity, string, Quote> {
-  private repositoryQuote: Quote[] = [];
-  private repositoryLike: DataUser[] = [];
+export class BlogQuoteRepository implements CRUDRepository<BlogQuoteEntity, number, Quote> {
+  constructor(private readonly prisma: PrismaService) {}
 
   public async create(item: BlogQuoteEntity): Promise<Quote> {
     const dataQuote = { ...item.toObject()};
-    this.repositoryQuote.push(dataQuote);
+    const creatNewQuote = await this.prisma.quote.create({
+      data: {
+        ...dataQuote,
+        comments: {
+          connect: []
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
 
-    return dataQuote;
+    return creatNewQuote;
   }
 
-  public async findById(id: string): Promise<Quote> {
-    const existQuote = this.repositoryQuote.find((element) => element.id === id);
+  public async findById(quoteId: number): Promise<Quote | null> {
+    const existQuote = await this.prisma.quote.findUnique({
+      where: {
+        id: quoteId
+      },
+      include: {
+        comments: true
+      }
+    })
 
     if (existQuote) {
       return existQuote;
@@ -33,69 +46,47 @@ export class BlogQuoteMemoryRepository implements CRUDRepository<BlogQuoteEntity
     return null;
   }
 
-  public async destroy(id: string): Promise<string[]> {
-    const index = this.repositoryQuote.findIndex((element) => element.id === id);
-    const idList = this.repositoryQuote[index].countComments;
+  public async destroy(quoteId: number): Promise<Quote> {
+    const informationDeleteQuote = await this.prisma.quote.delete({
+      where: {
+        id: quoteId
+      }
+    })
 
-    this.repositoryQuote = [
-      ...this.repositoryQuote.slice(0, index),
-      ...this.repositoryQuote.slice(index + 1),
-    ];
-
-    return idList
+    return informationDeleteQuote
   }
 
-  public async update(_id, _passwordHash, data: Quote): Promise<Quote> {
-    const existQuote = this.repositoryQuote
-      .find((element) => element.id === data.id);
+  public async update(quoteId: number, _passwordHash, data: BlogQuoteEntity): Promise<Quote> {
+    const dataQuote = data.toObject();
+    const updateOldQuote = await this.prisma.quote.update({
+      where: {
+        id: quoteId
+      },
+      data: {
+        ...dataQuote
+      },
+      include: {
+        comments: true
+      }
+    })
 
-      if (! existQuote) {
+      if (! updateOldQuote) {
         return null
       }
 
-      const editedQuote = {
-        ...data,
-        dateCreation: existQuote.dateCreation,
-        datePublication: new Date().toISOString(),
-        state: existQuote.state,
-        originolAuthor: existQuote.originolAuthor,
-        repost: existQuote.repost,
-        originolId: existQuote.originolId
-      }
-
-      const index = this.repositoryQuote.findIndex((element) => element.id === data.id);
-      this.repositoryQuote = [
-        ...this.repositoryQuote.slice(0, index),
-        editedQuote,
-        ...this.repositoryQuote.slice(index + 1),
-      ];
-
-      return editedQuote
+      return updateOldQuote
   }
 
-  public async find(parameter: Parameter): Promise<Quote[]> {
-    const {count, user} = parameter;
+  public async find(parameter: Parameter): Promise<Quote[] | []> {
+    const {count, user, typeSort} = parameter;
 
-    const quoteList: Quote[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
-
-    if(nameUser) {
-      this.repositoryQuote.forEach((element) => {
-      if(element.authorQuote === user) {
-        quoteList.push(element)
-      }
-    })}
-
-    if(! nameUser){
-      for(const element of this.repositoryQuote){ quoteList.push(element); }
-    }
-
-    quoteList.slice(defaultValues.zero, Number(limit))
+    const quoteList = this.prisma.quote.findMany({
+      take: Number(count)
+    })
 
     return quoteList;
   }
-
+/*
   public async addLike(parameter: ParameterLike): Promise<Quote> {
     const {nameUser, idPublication} = parameter;
     let dataQuote: Quote
@@ -202,4 +193,5 @@ export class BlogQuoteMemoryRepository implements CRUDRepository<BlogQuoteEntity
 
     return indicator
   }
+    */
 }

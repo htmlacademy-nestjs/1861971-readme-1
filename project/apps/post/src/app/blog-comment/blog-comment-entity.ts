@@ -1,12 +1,13 @@
-import {randomUUID} from 'node:crypto'
-
-import { Comment } from '@project/shared-types'
+import { Comment } from '@project/shared-types';
 
 export class BlogCommentEntity implements Comment {
-  public id?: string;
   public text: string;
   public authorComment: string;
-  public dateCreation?: string;
+  public idVideo: number;
+  public idText: number;
+  public idQuote: number;
+  public idPhoto: number;
+  public idLink: number;
 
   constructor(dataComment: Comment) {
     this.fillEntity(dataComment);
@@ -14,17 +15,23 @@ export class BlogCommentEntity implements Comment {
 
   public toObject() {
     return {
-      id: this.id,
       text: this.text,
       authorComment: this.authorComment,
-      dateCreation: this.dateCreation,
+      idVideo: this.idVideo,
+      idText: this.idText,
+      idQuote: this.idQuote,
+      idPhoto: this.idPhoto,
+      idLink: this.idLink
     };
   }
 
   public fillEntity(dataComment: Comment) {
-    this.id = randomUUID();
     this.text = dataComment.text;
     this.authorComment = dataComment.authorComment;
-    this.dateCreation = new Date().toISOString();
+    this.idVideo = dataComment.idVideo;
+    this.idText = dataComment.idText;
+    this.idQuote = dataComment.idQuote;
+    this.idPhoto = dataComment.idPhoto;
+    this.idLink = dataComment.idLink;
   }
 }

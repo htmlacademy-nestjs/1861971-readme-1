@@ -13,17 +13,20 @@ Content-Type: application/json
 ###
 
 # Get text by ID
-GET http://localhost:3000/api/text/db7daefa-df60-4b9a-906f-97eeddc0bb09 HTTP/1.1
+# 1-это id Текст
+GET http://localhost:3000/api/text/1 HTTP/1.1
 
 ###
 
 # Delete text by ID
-DELETE  http://localhost:3000/api/text/db7daefa-df60-4b9a-906f-97eeddc0bb09 HTTP/1.1
+# 1-это id Текст
+DELETE  http://localhost:3000/api/text/1 HTTP/1.1
 
 ###
 
 # Upgrade text by ID
-PATCH   http://localhost:3000/api/text/55f7deeb-fa8b-4c2e-ac49-883058994137 HTTP/1.1
+# 1-это id Текст
+PATCH   http://localhost:3000/api/text/1 HTTP/1.1
 Content-Type: application/json
 
 {

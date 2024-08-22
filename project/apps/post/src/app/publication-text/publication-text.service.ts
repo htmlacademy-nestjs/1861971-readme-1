@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 
-import { BlogTextMemoryRepository } from '../blog-text/blog-text-memory-repository';
-import { BlogCommentMemoryRepository } from '../blog-comment/blog-comment-memory-repository';
+import { BlogTextRepository } from '../blog-text/blog-text.repository';
 import { CreateTextDto } from './dto/creat-text.dto';
 import { BlogTextEntity } from '../blog-text/blog-text-entity';
 import { ValuePublicationText } from './publication.enum';
@@ -10,20 +9,19 @@ import {Text} from '@project/shared-types';
 @Injectable()
 export class PublicationTextService {
   constructor(
-    private readonly blogTextMemoryRepository: BlogTextMemoryRepository,
-    private readonly blogCommentMemoryRepository: BlogCommentMemoryRepository
+    private readonly blogTextRepository: BlogTextRepository
   ){}
 
   public async create(dto: CreateTextDto) {
 
-    const textEntity = await new BlogTextEntity(dto)
+    const textEntity = new BlogTextEntity(dto)
 
-    return this.blogTextMemoryRepository
+    return this.blogTextRepository
       .create(textEntity);
   }
 
-  public async show(id: string) {
-    const existText = await this.blogTextMemoryRepository
+  public async show(id: number) {
+    const existText = await this.blogTextRepository
       .findById(id);
 
     if (! existText) {
@@ -33,14 +31,17 @@ export class PublicationTextService {
     return existText
   }
 
-  public async delete(id: string) {
-    const idList = await this.blogTextMemoryRepository.destroy(id);
-    await this.blogCommentMemoryRepository.destroy(idList);
+  public async delete(id: number) {
+    const informationDeleteText = await this.blogTextRepository.destroy(id);
+
+    return informationDeleteText
 }
 
-public async update(dataText: Text) {
-  const editedText = await this.blogTextMemoryRepository
-    .update(null, null, dataText);
+public async update(id: number, dataText: Text) {
+  const textEntity =  new BlogTextEntity(dataText);
+
+  const editedText = await this.blogTextRepository
+    .update(id, null, textEntity);
 
   if (! editedText) {
     throw new ConflictException(ValuePublicationText.TextNotFound);

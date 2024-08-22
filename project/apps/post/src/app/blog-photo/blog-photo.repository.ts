@@ -3,28 +3,41 @@ import { Injectable } from '@nestjs/common';
 import {CRUDRepository} from '@project/util/util-types';
 import {
   Photo,
-  Parameter,
-  defaultValues,
-  ParameterLike,
-  DataUser,
-  ParameterComment
-} from '@project/shared-types';
+  Parameter
+ } from '@project/shared-types';
 import { BlogPhotoEntity } from './blog-photo-entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class BlogPhotoMemoryRepository implements CRUDRepository<BlogPhotoEntity, string, Photo>{
-  private repositoryPhoto: Photo[] = [];
-  private repositoryLike: DataUser[] = [];
+export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, number, Photo>{
+  constructor(private readonly prisma: PrismaService) {}
 
   public async create(item: BlogPhotoEntity): Promise<Photo> {
     const dataPhoto = { ...item.toObject()};
-    this.repositoryPhoto.push(dataPhoto);
+    const creatNewPhoto = await this.prisma.photo.create({
+      data: {
+        ...dataPhoto,
+        comments: {
+          connect: []
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
 
-    return dataPhoto;
+    return creatNewPhoto;
   }
 
-  public async findById(id: string): Promise<Photo> {
-    const existPhoto = this.repositoryPhoto.find((element) => element.id === id);
+  public async findById(photoId: number): Promise<Photo | null> {
+    const existPhoto = await this.prisma.photo.findUnique({
+      where: {
+        id: photoId
+      },
+      include: {
+        comments: true
+      }
+    })
 
     if (existPhoto) {
       return existPhoto;
@@ -33,69 +46,47 @@ export class BlogPhotoMemoryRepository implements CRUDRepository<BlogPhotoEntity
     return null;
   }
 
-  public async destroy(id: string): Promise<string[]> {
-    const index = this.repositoryPhoto.findIndex((element) => element.id === id);
-    const idList = this.repositoryPhoto[index].countComments;
+  public async destroy(photoId: number): Promise<Photo> {
+    const informationDeletePhoto = await this.prisma.photo.delete({
+      where: {
+        id: photoId
+      }
+    })
 
-    this.repositoryPhoto = [
-      ...this.repositoryPhoto.slice(0, index),
-      ...this.repositoryPhoto.slice(index + 1),
-    ];
-
-    return idList
+    return informationDeletePhoto
   }
 
-  public async update(_id, _passwordHash, data: Photo): Promise<Photo> {
-    const existPhoto = this.repositoryPhoto
-      .find((element) => element.id === data.id);
+  public async update(photoId: number, _passwordHash, data: BlogPhotoEntity): Promise<Photo> {
+    const dataPhoto = data.toObject();
+    const updateOldPhoto = await this.prisma.photo.update({
+      where: {
+        id: photoId
+      },
+      data: {
+        ...dataPhoto
+      },
+      include: {
+        comments: true
+      }
+    })
 
-      if (! existPhoto) {
+      if (! updateOldPhoto) {
         return null
       }
 
-      const editedPhoto = {
-        ...data,
-        dateCreation: existPhoto.dateCreation,
-        datePublication: new Date().toISOString(),
-        state: existPhoto.state,
-        originolAuthor: existPhoto.originolAuthor,
-        repost: existPhoto.repost,
-        originolId: existPhoto.originolId
-      }
-
-      const index = this.repositoryPhoto.findIndex((element) => element.id === data.id);
-      this.repositoryPhoto = [
-        ...this.repositoryPhoto.slice(0, index),
-        editedPhoto,
-        ...this.repositoryPhoto.slice(index + 1),
-      ];
-
-      return editedPhoto
+      return updateOldPhoto
   }
 
-  public async find(parameter: Parameter): Promise<Photo[]> {
-    const {count, user} = parameter;
+  public async find(parameter: Parameter): Promise<Photo[] | []> {
+    const {count, user, typeSort} = parameter;
 
-    const photoList: Photo[] = []
-    const limit = count ?? defaultValues.count;
-    const nameUser = user ?? false;
-
-    if(nameUser) {
-      this.repositoryPhoto.forEach((element) => {
-      if(element.authorPhoto === user) {
-        photoList.push(element)
-      }
-    })}
-
-    if(! nameUser){
-      for(const element of this.repositoryPhoto){ photoList.push(element); }
-    }
-
-    photoList.slice(defaultValues.zero, Number(limit))
+    const photoList = this.prisma.photo.findMany({
+      take: Number(count)
+    })
 
     return photoList;
   }
-
+/*
   public async addLike(parameter: ParameterLike): Promise<Photo> {
     const {nameUser, idPublication} = parameter;
     let dataPhoto: Photo
@@ -202,4 +193,5 @@ export class BlogPhotoMemoryRepository implements CRUDRepository<BlogPhotoEntity
 
     return indicator
   }
+    */
 }

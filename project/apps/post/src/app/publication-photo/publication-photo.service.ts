@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 
-import { BlogPhotoMemoryRepository } from '../blog-photo/blog-photo-memory-repository';
-import { BlogCommentMemoryRepository } from '../blog-comment/blog-comment-memory-repository';
+import { BlogPhotoRepository } from '../blog-photo/blog-photo.repository';
 import { CreatePhotoDto } from './dto/creat-photo.dto';
 import { BlogPhotoEntity } from '../blog-photo/blog-photo-entity';
 import { ValuePublicationPhoto } from './publication.enum';
@@ -10,20 +9,19 @@ import {Photo} from '@project/shared-types';
 @Injectable()
 export class PublicationPhotoService {
   constructor(
-    private readonly blogPhotoMemoryRepository: BlogPhotoMemoryRepository,
-    private readonly blogCommentMemoryRepository: BlogCommentMemoryRepository
+    private readonly blogPhotoRepository: BlogPhotoRepository
   ){}
 
   public async create(dto: CreatePhotoDto) {
 
-    const photoEntity = await new BlogPhotoEntity(dto)
+    const photoEntity = new BlogPhotoEntity(dto)
 
-    return this.blogPhotoMemoryRepository
+    return this.blogPhotoRepository
       .create(photoEntity);
   }
 
-  public async show(id: string) {
-    const existPhoto = await this.blogPhotoMemoryRepository
+  public async show(id: number) {
+    const existPhoto = await this.blogPhotoRepository
       .findById(id);
 
     if (! existPhoto) {
@@ -33,16 +31,19 @@ export class PublicationPhotoService {
     return existPhoto
   }
 
-  public async delete(id: string) {
-    const idList = await this.blogPhotoMemoryRepository.destroy(id);
-    await this.blogCommentMemoryRepository.destroy(idList);
-  }
+  public async delete(id: number) {
+    const informationDeletePhoto = await this.blogPhotoRepository.destroy(id);
 
-public async update(dataText: Photo) {
-  const editedPhoto = await this.blogPhotoMemoryRepository
-    .update(null, null, dataText);
+    return informationDeletePhoto
+}
 
-  if (! editedPhoto) {
+public async update(id: number, dataPhoto: Photo) {
+  const photoEntity =  new BlogPhotoEntity(dataPhoto);
+
+  const editedPhoto = await this.blogPhotoRepository
+    .update(id, null, photoEntity);
+
+  if (! photoEntity) {
     throw new ConflictException(ValuePublicationPhoto.PhotoNotFound);
   }
 
