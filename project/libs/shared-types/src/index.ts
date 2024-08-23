@@ -14,3 +14,4 @@ export * from './lib/paramerter-like.type';
 export * from './lib/data-user.type';
 export * from './lib/comment.interface';
 export * from './lib/paramerter-comment.type';
+export * from './lib/file.interface';

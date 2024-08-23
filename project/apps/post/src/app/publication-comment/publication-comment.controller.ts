@@ -6,17 +6,27 @@ import {
   Body,
   Query
  } from '@nestjs/common';
+ import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiParam
+} from '@nestjs/swagger';
 
 import { CreateCommentDto } from './dto/creat-comment.dto';
 import { Publication } from './dto/id-list.dto';
 import { PublicationCommentService } from './publication-comment.service';
 
+@ApiTags('comment')
 @Controller('comment')
 export class PublicationCommentController {
   constructor(
     private readonly publicationCommentService: PublicationCommentService
   ) {}
 
+  @ApiCreatedResponse({
+    description: 'Comment publication created',
+    type: CreateCommentDto
+  })
   @Post('create')
   public async create(@Body() dto: CreateCommentDto) {
 

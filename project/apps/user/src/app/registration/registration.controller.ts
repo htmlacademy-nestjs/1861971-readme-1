@@ -18,7 +18,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRdo } from './rdo/user.rdo';
 import {DetailsUserRdo} from './rdo/details-user.rdo'
 import {fillObject} from '@project/util-core';
-import { options } from 'joi';
 
 @ApiTags('registration')
 @Controller('user')

@@ -1,0 +1,24 @@
+{
+  "name": "uploader",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/uploader/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "uploader:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "uploader:build:development"
+        },
+        "production": {
+          "buildTarget": "uploader:build:production"
+        }
+      }
+    }
+  }
+}
