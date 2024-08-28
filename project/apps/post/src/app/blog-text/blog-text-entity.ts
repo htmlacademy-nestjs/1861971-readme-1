@@ -4,8 +4,8 @@ export class BlogTextEntity implements Text {
   public namePublication: string;
   public announcementPublication: string;
   public textPublication: string;
-  public setTag: string;
-  public authorPublication: string;
+  public setTag: string[];
+  public state: string;
   public originolAuthor: string;
   public repost: string;
   public originolId: string;
@@ -20,7 +20,7 @@ export class BlogTextEntity implements Text {
       announcementPublication: this.announcementPublication,
       textPublication: this.textPublication,
       setTag: this.setTag,
-      authorPublication: this.authorPublication,
+      state: this.state,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
       originolId: this.originolId
@@ -32,7 +32,7 @@ export class BlogTextEntity implements Text {
     this.announcementPublication = dataText.announcementPublication;
     this.textPublication = dataText.textPublication;
     this.setTag = dataText.setTag;
-    this.authorPublication = dataText.authorPublication;
+    this.state = dataText.state;
     this.originolAuthor = '';
     this.repost = '';
     this.originolId = '';

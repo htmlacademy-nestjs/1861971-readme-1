@@ -19,9 +19,11 @@
       "@project/config-uploader": ["libs/config/config-uploader/src/index.ts"],
       "@project/config-users": ["libs/config/config-users/src/index.ts"],
       "@project/models-post": ["libs/models/models-post/src/index.ts"],
+      "@project/shared-pipes": ["libs/shared-pipes/src/index.ts"],
       "@project/shared-types": ["libs/shared-types/src/index.ts"],
       "@project/util-core": ["libs/util/util-core/src/index.ts"],
-      "@project/util/util-types": ["libs/util/util-types/src/index.ts"]
+      "@project/util/util-types": ["libs/util/util-types/src/index.ts"],
+      "@project/validation-message": ["libs/validation-message/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

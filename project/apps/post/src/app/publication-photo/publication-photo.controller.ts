@@ -55,7 +55,7 @@ export class PublicationPhotoController {
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutPhoto = await this.publicationPhotoService.show(Number(id));
-    return detaileAboutPhoto
+    return fillObject(Photo, detaileAboutPhoto);
   }
 
   @ApiResponse({
@@ -71,7 +71,7 @@ export class PublicationPhotoController {
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeletePhoto = await this.publicationPhotoService.delete(Number(id));
-    return informationDeletePhoto
+    return fillObject(Photo, informationDeletePhoto);
   }
 
   @ApiResponse({

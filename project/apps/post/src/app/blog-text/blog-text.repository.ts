@@ -51,6 +51,9 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
     const informationDeleteText = await this.prisma.text.delete({
       where: {
         id: textId
+      },
+      include: {
+        comments: true
       }
     })
 
@@ -85,7 +88,10 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
           search: word
         },
       },
-      take: defaultValues.countSearch
+      take: defaultValues.countSearch,
+      include: {
+        comments: true
+      }
     })
 
     return textList

@@ -7,8 +7,8 @@ import { extension } from 'mime-types';
 import dayjs from 'dayjs';
 
 import { appConfig } from '@project/config-uploader';
-import { BlogFileRepository } from '../blog-file/blog-file.repository';
-import { BlogFileEntity } from '../blog-file/blog-file-entity';
+import { FileRepository } from './file.repository';
+import { FileEntity } from './file-entity';
 
 type WritedFile = {
   hashName: string;
@@ -22,7 +22,7 @@ export class FileService {
   constructor(
     @Inject(appConfig.KEY)
     private readonly applicationConfig: ConfigType<typeof appConfig>,
-    private readonly blogFileRepository: BlogFileRepository,
+    private readonly fileRepository: FileRepository,
   ) {}
   private async writeFile(file: Express.Multer.File): Promise<WritedFile> {
     const [ year, month ] = dayjs().format('YYYY MM').split(' ');
@@ -50,7 +50,7 @@ export class FileService {
   public async saveFile(file: Express.Multer.File) {
     const writedFile = await this.writeFile(file);
 
-    const newFile = new BlogFileEntity({
+    const newFile = new FileEntity({
       size: file.size,
       hashName: writedFile.hashName,
       mimetype: file.mimetype,
@@ -58,11 +58,11 @@ export class FileService {
       path: writedFile.path,
     });
 
-    return this.blogFileRepository.create(newFile);
+    return this.fileRepository.create(newFile);
   }
 
   public async getFile(fileId: string) {
-    const existFile = await this.blogFileRepository.findById(fileId);
+    const existFile = await this.fileRepository.findById(fileId);
 
     if (!existFile) {
       throw new NotFoundException(`File with ${fileId} not found.`);

@@ -50,6 +50,9 @@ export class BlogQuoteRepository implements CRUDRepository<BlogQuoteEntity, numb
     const informationDeleteQuote = await this.prisma.quote.delete({
       where: {
         id: quoteId
+      },
+      include: {
+        comments: true
       }
     })
 

@@ -55,7 +55,7 @@ export class PublicationLinkController {
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutLink = await this.publicationLinkService.show(Number(id));
-    return detaileAboutLink
+    return fillObject(Link, detaileAboutLink);
   }
 
   @ApiResponse({
@@ -71,7 +71,7 @@ export class PublicationLinkController {
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteLink = await this.publicationLinkService.delete(Number(id));
-    return informationDeleteLink
+    return fillObject(Link, informationDeleteLink);
   }
 
   @ApiResponse({

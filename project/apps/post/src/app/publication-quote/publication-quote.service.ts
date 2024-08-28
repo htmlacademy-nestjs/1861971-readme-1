@@ -5,6 +5,7 @@ import { CreateQuoteDto } from './dto/creat-quote.dto';
 import { BlogQuoteEntity } from '../blog-quote/blog-quote-entity';
 import { ValuePublicationQuote } from './publication.enum';
 import {Quote} from '@project/shared-types';
+import {castingToLowercase, removDuplicates} from '@project/util-core';
 
 @Injectable()
 export class PublicationQuoteService {
@@ -13,10 +14,17 @@ export class PublicationQuoteService {
   ){}
 
   public async create(dto: CreateQuoteDto) {
+    let updateQuote: Quote
+    const {setTag} = dto
 
-    const quoteEntity = new BlogQuoteEntity(dto)
+    if(setTag) {
+    const returnQuoteWithTagsListToLowercase = castingToLowercase<Quote>(dto)
+    updateQuote = removDuplicates (returnQuoteWithTagsListToLowercase)
+    }
 
-    return this.blogQuoteRepository
+    const quoteEntity = new BlogQuoteEntity(updateQuote ?? dto)
+
+    return await this.blogQuoteRepository
       .create(quoteEntity);
   }
 

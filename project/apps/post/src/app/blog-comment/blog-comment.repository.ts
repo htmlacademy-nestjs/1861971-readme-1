@@ -5,7 +5,7 @@ import { CommentInterface } from './comment.interface';
 import { Comment } from '@project/shared-types';
 import { BlogCommentEntity } from './blog-comment-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { Publication } from '../publication-comment/dto/id-list.dto';
+import { Publication } from '@project/shared-types';
 
 @Injectable()
 export class BlogCommentRepository implements CommentInterface {

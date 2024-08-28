@@ -6,13 +6,11 @@ import {
   getMongooseOptions,
 } from '@project/config-uploader';
 import { FileModule } from './file/file.module';
-import { BlogFileModule } from './blog-file/blog-file.module';
 
 @Module({
   imports: [
     ConfigUploaderModule,
     FileModule,
-    BlogFileModule,
     MongooseModule.forRootAsync(
       getMongooseOptions()
     )]

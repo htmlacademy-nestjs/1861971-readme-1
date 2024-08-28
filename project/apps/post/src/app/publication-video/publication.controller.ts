@@ -55,7 +55,7 @@ export class PublicationController {
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutVideo = await this.publicationService.show(Number(id));
-    return detaileAboutVideo;
+    return fillObject(Video, detaileAboutVideo);
   }
 
   @ApiResponse({
@@ -71,7 +71,7 @@ export class PublicationController {
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteVideo = await this.publicationService.delete(Number(id));
-    return informationDeleteVideo
+    return fillObject(Video, informationDeleteVideo)
   }
 
   @ApiResponse({

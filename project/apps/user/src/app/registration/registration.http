@@ -6,10 +6,10 @@ Content-Type: application/json
   "email": "vlad@v.com",
   "firstName": "Vlad",
   "password": "Volga34",
-  "avatar": "vlad.png"
+  "avatar": "vlad.jpeg"
 }
 
 ###
 
 # Get user by ID
-GET http://localhost:4000/api/user/register/66aa47a11ee332582a197c8f HTTP/1.1
+GET http://localhost:4000/api/user/register/66cd70fe08e4005f86d14736 HTTP/1.1

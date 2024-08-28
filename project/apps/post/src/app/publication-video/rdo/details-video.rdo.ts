@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
 
 export class DetailsVideoRdo {
@@ -26,7 +26,7 @@ export class DetailsVideoRdo {
     example:'горы'
   })
   @Expose()
-  public setTag: string;
+  public setTag: string[];
 
   @ApiProperty({
     example: 'Vlad'
@@ -50,8 +50,9 @@ export class DetailsVideoRdo {
   @ApiProperty({
     example: 3
   })
-  @Expose()
-  public comments: number;
+  @Expose({name: 'comments'})
+  @Transform(({ value }) => value.length)
+  public commentCounter: number;
 
   @ApiProperty({
     example: '2024-08-17 18:06:41.519'

@@ -50,6 +50,9 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
     const informationDeletePhoto = await this.prisma.photo.delete({
       where: {
         id: photoId
+      },
+      include: {
+        comments: true
       }
     })
 

@@ -1,6 +1,6 @@
 import { File } from '@project/shared-types';
 
-export class BlogFileEntity implements File {
+export class FileEntity implements File {
   public id: string;
   public hashName: string;
   public mimetype: string;

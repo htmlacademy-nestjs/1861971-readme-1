@@ -1,4 +1,15 @@
 import {ApiProperty} from '@nestjs/swagger';
+import {
+  IsEmail,
+  Length
+} from 'class-validator';
+
+import {MessageRegistration} from '@project/validation-message';
+
+const {
+  incorrectEmail,
+  incorrectPassword
+} = MessageRegistration
 
 export class LoginUserDto {
   @ApiProperty({
@@ -6,6 +17,7 @@ export class LoginUserDto {
     required: true,
     example: 'vlad@v.com'
   })
+  @IsEmail({}, {message: incorrectEmail})
   public email: string;
 
   @ApiProperty({
@@ -13,5 +25,6 @@ export class LoginUserDto {
     required: true,
     example: 'Volga34'
   })
+  @Length(6, 12, {message: incorrectPassword})
   public password: string;
 }

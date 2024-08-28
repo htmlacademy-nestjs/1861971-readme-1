@@ -1,5 +1,4 @@
-import { Expose } from 'class-transformer';
-import { TypePublication } from '@project/shared-types';
+import { Expose, Transform } from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
 
 export class DetailsTextRdo {
@@ -33,7 +32,7 @@ export class DetailsTextRdo {
     example:'горы'
   })
   @Expose()
-  public setTag: string;
+  public setTag: string[];
 
   @ApiProperty({
     example: 'Vlad'
@@ -46,7 +45,7 @@ export class DetailsTextRdo {
     example: 'text'
   })
   @Expose()
-  typePublication: TypePublication;
+  typePublication: string;
 
   @ApiProperty({
     example: 2
@@ -57,8 +56,9 @@ export class DetailsTextRdo {
   @ApiProperty({
     example: 3
   })
-  @Expose()
-  comments: number;
+  @Expose({name: 'comments'})
+  @Transform(({ value }) => value.length)
+  public commentCounter: number;
 
   @ApiProperty({
     example: '2024-08-17 18:06:41.519'

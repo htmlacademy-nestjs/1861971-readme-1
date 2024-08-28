@@ -5,6 +5,7 @@ import { CreateTextDto } from './dto/creat-text.dto';
 import { BlogTextEntity } from '../blog-text/blog-text-entity';
 import { ValuePublicationText } from './publication.enum';
 import {Text} from '@project/shared-types';
+import {castingToLowercase, removDuplicates} from '@project/util-core';
 
 @Injectable()
 export class PublicationTextService {
@@ -13,10 +14,17 @@ export class PublicationTextService {
   ){}
 
   public async create(dto: CreateTextDto) {
+    let updateText: Text
+    const {setTag} = dto
 
-    const textEntity = new BlogTextEntity(dto)
+    if(setTag) {
+    const returnTextWithTagsListToLowercase = castingToLowercase<Text>(dto)
+    updateText = removDuplicates (returnTextWithTagsListToLowercase)
+    }
 
-    return this.blogTextRepository
+    const textEntity = new BlogTextEntity(updateText ?? dto)
+
+    return await this.blogTextRepository
       .create(textEntity);
   }
 

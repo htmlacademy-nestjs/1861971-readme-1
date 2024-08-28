@@ -56,7 +56,7 @@ export class PublicationQuoteController {
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutQuote = await this.publicationQuoteService.show(Number(id));
-    return detaileAboutQuote
+    return fillObject(Quote, detaileAboutQuote);
   }
 
   @ApiResponse({
@@ -72,7 +72,7 @@ export class PublicationQuoteController {
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteQuote = await this.publicationQuoteService.delete(Number(id));
-    return informationDeleteQuote
+    return fillObject(Quote, informationDeleteQuote);
   }
 
   @ApiResponse({

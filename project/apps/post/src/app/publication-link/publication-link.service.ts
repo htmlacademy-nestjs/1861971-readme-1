@@ -2,9 +2,10 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 
 import { BlogLinkRepository } from '../blog-link/blog-link.repository';
 import { CreateLinkDto } from './dto/creat-link.dto';
-import { BlogLinkEntity } from '../blog-link/blog-photo-entity';
+import { BlogLinkEntity } from '../blog-link/blog-link-entity';
 import { ValuePublicationLink } from './publication.enum';
-import {Link} from '@project/shared-types'
+import {Link} from '@project/shared-types';
+import {castingToLowercase, removDuplicates} from '@project/util-core';
 
 @Injectable()
 export class PublicationLinkService {
@@ -13,10 +14,17 @@ export class PublicationLinkService {
   ){}
 
   public async create(dto: CreateLinkDto) {
+    let updateLink: Link
+    const {setTag} = dto
 
-    const linkEntity = new BlogLinkEntity(dto)
+    if(setTag) {
+    const returnLinkWithTagsListToLowercase = castingToLowercase<Link>(dto)
+    updateLink = removDuplicates (returnLinkWithTagsListToLowercase)
+    }
 
-    return this.blogLinkRepository
+    const linkEntity = new BlogLinkEntity(updateLink ?? dto)
+
+    return await this.blogLinkRepository
       .create(linkEntity);
   }
 

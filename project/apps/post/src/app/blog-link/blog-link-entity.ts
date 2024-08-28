@@ -3,8 +3,8 @@ import { Link } from '@project/shared-types'
 export class BlogLinkEntity implements Link {
   public link: string;
   public description: string;
-  public setTag: string;
-  public authorLink: string;
+  public setTag: string[];
+  public state: string;
   public originolAuthor: '';
   public repost: '';
   public originolId: '';
@@ -18,7 +18,7 @@ export class BlogLinkEntity implements Link {
       link: this.link,
       description: this.description,
       setTag: this.setTag,
-      authorLink: this.authorLink,
+      state: this.state,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
       originolId: this.originolId
@@ -29,7 +29,7 @@ export class BlogLinkEntity implements Link {
     this.link = dataLink.link;
     this.description = dataLink.description;
     this.setTag = dataLink.setTag;
-    this.authorLink = dataLink.authorLink;
+    this.state = dataLink.state;
     this.originolAuthor = '';
     this.repost = '';
     this.originolId = '';

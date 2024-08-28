@@ -1,0 +1,9 @@
+{
+  "name": "validation-message",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/validation-message/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project validation-message --web",
+  "targets": {}
+}

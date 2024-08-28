@@ -7,7 +7,7 @@ import { File } from '@project/shared-types';
   collection: 'files',
   timestamps: true
 })
-export class BlogFileModel extends Document implements File {
+export class FileModel extends Document implements File {
   @Prop({
     required: true,
   })
@@ -34,4 +34,4 @@ export class BlogFileModel extends Document implements File {
   public size: number;
 }
 
-export const BlogFileSchema = SchemaFactory.createForClass(BlogFileModel);
+export const FileSchema = SchemaFactory.createForClass(FileModel);

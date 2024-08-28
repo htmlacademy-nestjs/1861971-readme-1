@@ -55,7 +55,7 @@ export class PublicationTextController {
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutText = await this.publicationTextService.show(Number(id));
-    return detaileAboutText
+    return fillObject(Text, detaileAboutText);
   }
 
   @ApiResponse({
@@ -71,7 +71,7 @@ export class PublicationTextController {
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteText = await this.publicationTextService.delete(Number(id));
-    return informationDeleteText
+    return fillObject(Text, informationDeleteText);
   }
 
   @ApiResponse({

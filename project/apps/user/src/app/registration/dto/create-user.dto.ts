@@ -1,4 +1,21 @@
 import {ApiProperty} from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsString,
+  Length,
+  IsOptional,
+  Validate
+} from 'class-validator';
+
+import { ValidationPhoto } from '@project/util-core';
+import {MessageRegistration} from '@project/validation-message';
+
+const {
+  incorrectEmail,
+  firstName,
+  incorrectPassword,
+  incorrectAvatar
+} = MessageRegistration
 
 export class CreateUserDto {
   @ApiProperty({
@@ -6,6 +23,7 @@ export class CreateUserDto {
     required: true,
     example: 'vlad@v.com'
   })
+  @IsEmail({}, {message: incorrectEmail})
   public email: string;
 
   @ApiProperty({
@@ -15,6 +33,8 @@ export class CreateUserDto {
     maxLength: 50,
     example: 'Vlad'
   })
+  @IsString({message: firstName.stringFirstName})
+  @Length(3, 50, {message: firstName.lengthFirstName})
   public firstName: string;
 
   @ApiProperty({
@@ -24,6 +44,7 @@ export class CreateUserDto {
     maxLength: 12,
     example: 'Volga34'
   })
+  @Length(6, 12, {message: incorrectPassword})
   public password: string;
 
   @ApiProperty({
@@ -31,5 +52,8 @@ export class CreateUserDto {
     required: true,
     example: 'Yna.png'
   })
+  @IsOptional()
+  @IsString({message: incorrectAvatar.stringAvatar})
+  @Validate(ValidationPhoto, {message: incorrectAvatar.formatsAvatar})
   public avatar: string;
 }

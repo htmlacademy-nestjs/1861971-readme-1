@@ -1,10 +1,12 @@
 import {  Module } from '@nestjs/common';
 import {ServeStaticModule} from '@nestjs/serve-static';
+import {MongooseModule} from '@nestjs/mongoose';
 
 import {ConfigService} from '@nestjs/config';
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
-import { BlogFileModule } from '../blog-file/blog-file.module';
+import { FileModel, FileSchema } from './file.model';
+import { FileRepository } from './file.repository';
 
 @Module({
   imports: [
@@ -23,9 +25,11 @@ import { BlogFileModule } from '../blog-file/blog-file.module';
         }]
       }
     }),
-    BlogFileModule
+    MongooseModule.forFeature([
+      { name: FileModel.name, schema: FileSchema }
+    ])
   ],
-  providers: [FileService],
+  providers: [FileService, FileRepository],
   controllers: [FileController],
 })
 export class FileModule {}

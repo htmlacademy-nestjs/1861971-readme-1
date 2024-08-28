@@ -1,4 +1,24 @@
 import {ApiProperty} from '@nestjs/swagger';
+import {
+  IsString,
+  Length,
+  Validate,
+  IsOptional,
+  ArrayMaxSize,
+  IsEnum
+} from 'class-validator';
+
+import {MessageText} from '@project/validation-message';
+import {ValidationLengthTag, ValidationGapTag} from '@project/util-core';
+import {VideoState} from '@project/shared-types';
+
+const {
+  namePublication,
+  announcementPublication,
+  textPublication,
+  setTag,
+  state
+} = MessageText;
 
 export class CreateTextDto {
   @ApiProperty({
@@ -8,6 +28,8 @@ export class CreateTextDto {
     required: true,
     example: 'Я среди гор Домбая в Карачаево-Черкесии'
   })
+  @IsString({message: `${namePublication.stringPublication}`})
+  @Length(20, 50, {message: `${namePublication.lengthPublication}`})
   public namePublication: string;
 
   @ApiProperty({
@@ -17,6 +39,8 @@ export class CreateTextDto {
     required: true,
     example: 'Я среди гор Домбая в Карачаево-Черкесии. Для любящих активный отдых и пешии прогулки.'
   })
+  @IsString({message: `${announcementPublication.stringAnnouncement}`})
+  @Length(50, 255, {message: `${announcementPublication.lengthAnnouncement}`})
   public announcementPublication: string;
 
   @ApiProperty({
@@ -26,6 +50,8 @@ export class CreateTextDto {
     required: true,
     example: 'Это было не забываемо. Советую.'
   })
+  @IsString({message: `${textPublication.stringText}`})
+  @Length(50, 255, {message: `${textPublication.lengthText}`})
   public textPublication: string;
 
   @ApiProperty({
@@ -34,12 +60,22 @@ export class CreateTextDto {
     maxLength: 10,
     example: 'прогулка'
   })
-  public setTag: string;
+  @IsOptional()
+  @ArrayMaxSize(8, {message: setTag.lengthArrayWithTags})
+  @Validate(ValidationGapTag, {
+    message: setTag.gapTag,
+  })
+  @Validate(ValidationLengthTag, {
+    message: setTag.lengthTag,
+  })
+  public setTag: string[];
 
   @ApiProperty({
-    description: 'Author of the publication',
+    description: 'A publication can be in one of two states',
+    enum: VideoState,
     required: true,
-    example: 'Vlad'
+    example: 'Черновик'
   })
-  public authorPublication: string;
+  @IsEnum(VideoState, {message: state})
+  public state: VideoState;
 }
