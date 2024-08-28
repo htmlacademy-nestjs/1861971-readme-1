@@ -5,6 +5,7 @@ import { CreateVideoDto } from './dto/creat-video.dto';
 import { BlogVideoEntity } from '../blog-video/blog-video-entity';
 import { ValuePublication } from './publication.enum';
 import {Video} from '@project/shared-types';
+import {castingToLowercase, removDuplicates} from '@project/util-core';
 
 @Injectable()
 export class PublicationService {
@@ -13,10 +14,17 @@ export class PublicationService {
   ){}
 
   public async create(dto: CreateVideoDto) {
+    let updateVideo: Video
+    const {setTag} = dto
 
-    const videoEntity = new BlogVideoEntity(dto)
+    if(setTag) {
+    const returnVideoWithTagsListToLowercase = castingToLowercase<Video>(dto)
+    updateVideo = removDuplicates (returnVideoWithTagsListToLowercase)
+    }
 
-    return this.blogVideoRepository
+    const videoEntity = new BlogVideoEntity(updateVideo ?? dto)
+
+    return await this.blogVideoRepository
       .create(videoEntity);
   }
 

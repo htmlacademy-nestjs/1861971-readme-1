@@ -18,7 +18,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserRdo } from './rdo/user.rdo';
 import {DetailsUserRdo} from './rdo/details-user.rdo'
 import {fillObject} from '@project/util-core';
-import { options } from 'joi';
+import {MongoIdValidationPipe} from '@project/shared-pipes';
 
 @ApiTags('registration')
 @Controller('user')
@@ -57,7 +57,7 @@ export class RegistrationController {
     example: '66aa47a11ee332582a197c8f'
   })
   @Get('register/:id')
-  public async show(@Param('id') id: string) {
+  public async show(@Param('id', MongoIdValidationPipe) id: string) {
     const existUser = await this.registrationService.getUser(id);
     return fillObject(DetailsUserRdo, existUser);
   }

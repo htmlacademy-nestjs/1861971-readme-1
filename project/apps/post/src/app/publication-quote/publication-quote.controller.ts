@@ -5,38 +5,90 @@ import {
   Delete,
   Patch,
   Body,
-  Param
+  Param,
+  HttpStatus
  } from '@nestjs/common';
+
+ import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiFoundResponse,
+  ApiNotFoundResponse,
+  ApiParam,
+  ApiResponse
+} from '@nestjs/swagger';
 
 import { PublicationQuoteService } from './publication-quote.service';
 import { CreateQuoteDto } from './dto/creat-quote.dto';
 import {fillObject} from '@project/util-core';
 import { DetailsQuoteRdo } from './rdo/details-quote.rdo';
+import { Quote } from './rdo/quote.rdo';
 
+@ApiTags('quote')
 @Controller('quote')
 export class PublicationQuoteController {
   constructor(
     private readonly publicationQuoteService: PublicationQuoteService
   ) {}
 
+  @ApiCreatedResponse({
+    description: 'Quote publication created',
+    type: DetailsQuoteRdo
+  })
   @Post('publication')
   public async create(@Body() dto: CreateQuoteDto) {
     const newQuote = await this.publicationQuoteService.create(dto);
     return fillObject(DetailsQuoteRdo, newQuote);
   }
 
+  @ApiFoundResponse({
+    description: 'Found a quote',
+    type: Quote
+  })
+  @ApiNotFoundResponse({
+    description: 'Quote not found'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique quote id',
+    example: '1'
+  })
   @Get(':id')
   public async show(@Param('id') id: string) {
     const detaileAboutQuote = await this.publicationQuoteService.show(Number(id));
-    return detaileAboutQuote
+    return fillObject(Quote, detaileAboutQuote);
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Quote deleted',
+    type: Quote
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique quote id',
+    example: '1'
+  })
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteQuote = await this.publicationQuoteService.delete(Number(id));
-    return informationDeleteQuote
+    return fillObject(Quote, informationDeleteQuote);
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Video updated',
+    type: DetailsQuoteRdo
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Quote not found'
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique quote id',
+    example: '1'
+  })
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateQuoteDto) {
 

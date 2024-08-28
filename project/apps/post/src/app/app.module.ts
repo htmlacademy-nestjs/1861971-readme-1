@@ -16,6 +16,7 @@ import { BlogCommentModule } from './blog-comment/blog-comment.module';
 import { PublicationCommentModule } from './publication-comment/publication-comment.module';
 import { PublicationSearchModule } from './publication-search/publication-search.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ConfigPostModule } from '@project/config-post';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PublicationCommentModule,
     PublicationSearchModule,
     PrismaModule,
+    ConfigPostModule
   ],
 })
 export class AppModule {}

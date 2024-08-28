@@ -5,6 +5,7 @@ import { CreatePhotoDto } from './dto/creat-photo.dto';
 import { BlogPhotoEntity } from '../blog-photo/blog-photo-entity';
 import { ValuePublicationPhoto } from './publication.enum';
 import {Photo} from '@project/shared-types';
+import {castingToLowercase, removDuplicates} from '@project/util-core';
 
 @Injectable()
 export class PublicationPhotoService {
@@ -13,10 +14,17 @@ export class PublicationPhotoService {
   ){}
 
   public async create(dto: CreatePhotoDto) {
+    let updatePhoto: Photo
+    const {setTag} = dto
 
-    const photoEntity = new BlogPhotoEntity(dto)
+    if(setTag) {
+    const returnPhotoWithTagsListToLowercase = castingToLowercase<Photo>(dto)
+    updatePhoto = removDuplicates (returnPhotoWithTagsListToLowercase)
+    }
 
-    return this.blogPhotoRepository
+    const photoEntity = new BlogPhotoEntity(updatePhoto ?? dto)
+
+    return await this.blogPhotoRepository
       .create(photoEntity);
   }
 

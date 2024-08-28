@@ -7,6 +7,7 @@ import {
  } from '@project/shared-types';
 import { BlogVideoEntity } from './blog-video-entity';
 import { PrismaService } from '../prisma/prisma.service';
+import { defaultValues } from '@project/shared-types';
 
 @Injectable()
 export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, number, Video> {
@@ -50,6 +51,9 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
     const informationDeleteVideo = await this.prisma.video.delete({
       where: {
         id: videoId
+      },
+      include: {
+        comments: true
       }
     })
 
@@ -84,6 +88,10 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
           search: word
         },
       },
+      take: defaultValues.countSearch,
+      include: {
+        comments: true
+      }
     })
 
     return videosList

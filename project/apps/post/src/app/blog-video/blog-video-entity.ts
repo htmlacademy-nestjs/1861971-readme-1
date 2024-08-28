@@ -3,8 +3,8 @@ import { Video } from '@project/shared-types'
 export class BlogVideoEntity implements Video {
   public namePublication: string;
   public linkVideo: string;
-  public setTag: string;
-  public authorPublication: string;
+  public setTag: string[];
+  public state: string;
   public originolAuthor: string;
   public repost: string;
   public originolId: string;
@@ -18,7 +18,7 @@ export class BlogVideoEntity implements Video {
       namePublication: this.namePublication,
       linkVideo: this.linkVideo,
       setTag: this.setTag,
-      authorPublication: this.authorPublication,
+      state: this.state,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
       originolId: this.originolId
@@ -29,7 +29,7 @@ export class BlogVideoEntity implements Video {
     this.namePublication = dataVideo.namePublication;
     this.linkVideo = dataVideo.linkVideo;
     this.setTag = dataVideo.setTag;
-    this.authorPublication = dataVideo.authorPublication;
+    this.state = dataVideo.state;
     this.originolAuthor = '';
     this.repost = '';
     this.originolId = '';

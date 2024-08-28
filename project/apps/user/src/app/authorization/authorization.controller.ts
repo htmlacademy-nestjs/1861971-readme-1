@@ -4,7 +4,8 @@ import {
   Patch,
   Body,
   Param,
-  HttpStatus
+  HttpStatus,
+  UseGuards
  } from '@nestjs/common';
  import {
   ApiTags,
@@ -12,12 +13,15 @@ import {
   ApiResponse,
   ApiParam
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 import { AuthorizationService } from './authorization.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ChangPasswordUserDto } from './dto/chang-password-user.dto';
 import {fillObject} from '@project/util-core'
 import { UserRdo } from '../registration/rdo/user.rdo';
+import {MongoIdValidationPipe} from '@project/shared-pipes';
+import { JwtTokenRdo } from './rdo/jwt-token.rdo';
 
 @ApiTags('authorization')
 @Controller('user')
@@ -41,8 +45,8 @@ export class AuthorizationController {
   })
   @Post('authorization')
   public async create(@Body() dto: LoginUserDto) {
-    const user = await this.authorizationService.verify(dto);
-    return fillObject(UserRdo, user);
+    const accessToken = await this.authorizationService.verify(dto);
+    return accessToken
   }
 
   @ApiCreatedResponse({
@@ -63,8 +67,9 @@ export class AuthorizationController {
     description: 'Unique user id',
     example: '66aa47a11ee332582a197c8f'
   })
+  @UseGuards(JwtAuthGuard)
   @Patch('authorization/:id')
-  public async update(@Body() dto: ChangPasswordUserDto, @Param('id') id: string) {
+  public async update(@Body() dto: ChangPasswordUserDto, @Param('id', MongoIdValidationPipe) id: string) {
     const user = await this.authorizationService.update(id, dto);
     return fillObject(UserRdo, user);
   }

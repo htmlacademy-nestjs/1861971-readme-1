@@ -3,18 +3,21 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
 
 import { BlogUserRepository } from '../blog-user/blog-user.repository';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ValueRegistration } from '../registration/registration.enum';
 import {comparePassword, setPassword} from '@project/util-core';
 import { ChangPasswordUserDto } from './dto/chang-password-user.dto';
+import { TokenPayload } from '@project/shared-types';
 
 @Injectable()
 export class AuthorizationService {
 
   constructor(
-    private readonly blogUserRepository: BlogUserRepository
+    private readonly blogUserRepository: BlogUserRepository,
+    private readonly jwtService: JwtService
   ){}
 
   public async verify(dto: LoginUserDto) {
@@ -31,7 +34,18 @@ export class AuthorizationService {
       throw new ConflictException(ValueRegistration.UserPasswordWrong);
     }
 
-    return existUser;
+    const payload: TokenPayload = {
+      id: existUser.id,
+      email: existUser.email,
+      firstName: existUser.firstName,
+      avatar: existUser.avatar
+    };
+
+    const accessToken = {
+      accessToken: await this.jwtService.signAsync(payload)
+    }
+
+    return accessToken;
   }
 
   public async update(id: string, dto: ChangPasswordUserDto) {

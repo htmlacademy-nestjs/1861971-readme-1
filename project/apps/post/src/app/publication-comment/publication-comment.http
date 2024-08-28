@@ -1,33 +1,28 @@
 # Add comment
-# В объекте третий ключ от верху может быть {idVideo, idText, idQuote, idPhoto, idLink}, а значением ключа id публикации.
-POST   http://localhost:3000/api/comment/create HTTP/1.1
+POST   http://localhost:4000/api/comment/create HTTP/1.1
 Content-Type: application/json
 
 {
-  "text": "Good trip",
-  "authorComment": "Tany",
-  "idPhoto": 1
+  "text": "Good trip it is GOOD !!!",
+  "idVideo": 2
 }
 
 ###
 
 # Get list of comments
-# В idPost значение id публикации
-GET http://localhost:3000/api/comment/list HTTP/1.1
+GET http://localhost:4000/api/comment/list HTTP/1.1
 Content-Type: application/json
 
 {
-  "idPost": 1
+  "idPost": 2
 }
 
 ###
 
 # Delete comment
-# В idPost значение id публикации
-DELETE  http://localhost:3000/api/comment/delete HTTP/1.1
+DELETE  http://localhost:4000/api/comment/delete HTTP/1.1
 Content-Type: application/json
 
 {
-  "idPost": 2,
-  "authorComment": "Tany"
+  "idPost": 1
 }

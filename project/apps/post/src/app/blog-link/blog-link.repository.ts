@@ -5,7 +5,7 @@ import {
   Link,
   Parameter
  } from '@project/shared-types';
-import { BlogLinkEntity } from './blog-photo-entity';
+import { BlogLinkEntity } from './blog-link-entity';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -50,6 +50,9 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
     const informationDeleteLink = await this.prisma.link.delete({
       where: {
         id: linkId
+      },
+      include: {
+        comments: true
       }
     })
 

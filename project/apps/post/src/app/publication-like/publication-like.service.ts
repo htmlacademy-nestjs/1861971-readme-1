@@ -19,7 +19,7 @@ import { LikeDto } from './dto/like.dto';
 //import { DetailsVideoRdo } from '../publication-video/rdo/details-video.rdo';
 //import { DetailsTextRdo } from '../publication-text/rdo/details-text.rdo';
 import { DetailsQuoteRdo } from '../publication-quote/rdo/details-quote.rdo';
-import { DetailsPhotoRdo } from '../publication-photo/rdo/details-quote.rdo';
+import { DetailsPhotoRdo } from '../publication-photo/rdo/details-photo.rdo';
 import { DetailsLinkRdo } from '../publication-link/rdo/details-quote.rdo';
 //import { ValuePublication } from '../publication-video/publication.enum';
 //import { ValuePublicationText } from '../publication-text/publication.enum';
