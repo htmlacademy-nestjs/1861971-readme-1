@@ -87,7 +87,7 @@ export const MessageComment = {
 } as const;
 
 export const MessageSearch = {
-  stringSearch: 'The "word" is not valid. Type string'
+  stringSearch: 'The "titlePublication" is not valid. Type string'
 } as const;
 
 export const MessageRegistration = {
@@ -102,4 +102,17 @@ export const MessageRegistration = {
     formatsAvatar: 'The "avatar" is not valid. Allowed formats: jpeg, png'
   },
   incorrectNewPassword: 'The "newPassword" is not valid. Min length 6, max length 12'
+} as const;
+
+export const MessageLike = {
+  incorrectIdUser: 'The "idUser" is not valid. Type string',
+  incorrectTypePublication: 'The "typePublication" is not valid. Could be a value of the following type: "video", "text", "photo", "quote", "link"',
+  incorrectIdPublication: 'The "idPublication" is not valid. Type number'
+} as const;
+
+export const MessageList = {
+  incorrectAuthPublication: 'The "authPublication" is not valid. Type string',
+  incorrectTypeSort: 'The "typeSort" is not valid. The field value can be "datePublication", "like", "discussed"',
+  incorrectTypePublication: 'The "typePublication" is not valid. The field value can be "video", "text", "quote", "photo", "link", "all"',
+  incorrectNameTag: 'The "nameTag" is not valid. Type string'
 } as const;

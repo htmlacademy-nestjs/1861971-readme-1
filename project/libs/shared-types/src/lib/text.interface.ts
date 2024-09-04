@@ -8,7 +8,7 @@ export interface Text {
   setTag?: string[];
   authorPublication?: string;
   typePublication?: string;
-  countLike?: number;
+  countLike?: string[];
   comments?: Comment[];
   dateCreation?: Date;
   datePublication?: Date;

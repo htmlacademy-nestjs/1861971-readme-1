@@ -27,8 +27,8 @@ export class PublicationSearchController {
     type: [Text]
   })
   @Get('publication')
-  public async index(@Body() {word}: CreateSearchDto) {
-    const publicationsList = await this.publicationSearchService.index(word);
+  public async index(@Body() {titlePublication}: CreateSearchDto) {
+    const publicationsList = await this.publicationSearchService.index(titlePublication);
 
     const updatePublicationsList = []
 

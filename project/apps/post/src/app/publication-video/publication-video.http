@@ -17,7 +17,7 @@ Content-Type: application/json
 ###
 
 # Get video by ID
-GET http://localhost:4000/api/video/3 HTTP/1.1
+GET http://localhost:4000/api/video/1 HTTP/1.1
 
 ###
 

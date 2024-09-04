@@ -3,10 +3,15 @@ import { Injectable } from '@nestjs/common';
 import {CRUDRepository} from '@project/util/util-types';
 import {
   Link,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogLinkEntity } from './blog-link-entity';
 import { PrismaService } from '../prisma/prisma.service';
+import { ParameterLike } from '@project/shared-types';
+
+let skip = 0;
 
 @Injectable()
 export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number, Link> {
@@ -81,120 +86,117 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
   }
 
   public async find(parameter: Parameter): Promise<Link[]> {
-    const {count, user, typeSort} = parameter;
+    const {limit, authPublication, typeSort, nameTag} = parameter;
 
-    const linkList = this.prisma.link.findMany({
-      take: Number(count)
+    const linkList = await this.prisma.link.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        OR: [
+          {
+            authorLink: {
+              contains: authPublication,
+            },
+          },
+          {
+            authorLink: {
+              not: authPublication
+            }
+          }
+        ],
+        setTag: {
+          has: nameTag
+        }
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
+
+    if(typeSort === TypeSort.Like) {
+      (await linkList).sort((a, b) => b.countLike.length - a.countLike.length)
+    }
+
+    if(typeSort === TypeSort.Discussed) {
+      (await linkList).sort((a, b) => b.comments.length - a.comments.length)
+    }
+
+    skip += limit;
 
     return linkList;
   }
-/*
-  public async addLike(parameter: ParameterLike): Promise<Link> {
-    const {nameUser, idPublication} = parameter;
-    let dataLink: Link
 
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Link[] | []> {
+    const linksList = await this.prisma.link.findMany({
+      where: {
+        authorLink: {
+          contains: author
+        },
+        state: {
+          contains: VideoState.Draft
         }
-      });
-
-      if(existUser) {
-        dataLink = await this.findById(idPublication);
-        dataLink.countLike = dataLink.countLike - defaultValues.one;
-
-        const index = this.repositoryLink.findIndex((element) => element.id === idPublication);
-        this.repositoryLink = [
-          ...this.repositoryLink.slice(defaultValues.zero, index),
-          dataLink,
-          ...this.repositoryLink.slice(index + 1),
-        ];
-
-        return dataLink
-      }
-
-    dataLink = await this.findById(idPublication);
-
-    if(! dataLink) {
-      return null
-    }
-
-    const changeLink = {
-      ... dataLink,
-      countLike: dataLink.countLike + defaultValues.one
-    }
-
-    const index = this.repositoryLink.findIndex((element) => element.id === idPublication);
-      this.repositoryLink = [
-        ...this.repositoryLink.slice(defaultValues.zero, index),
-        changeLink,
-        ...this.repositoryLink.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changeLink
+    skip += limit;
+
+    return linksList
   }
 
-  public async addComment(parameter: ParameterComment): Promise<Link> {
-    const {idComment, idPublication} = parameter;
+  public async addLike(parameter: ParameterLike): Promise<Link> {
+    const {idUser, idPublication} = parameter;
 
-    const dataLink = await this.findById(idPublication);
+    const link = await this.prisma.link.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
 
-    if(! dataLink) {
-      return null
-    }
-
-    dataLink.countComments.push(idComment)
-
-    const changeLink = {
-      ... dataLink,
-      countComments: dataLink.countComments
-    }
-
-    const index = this.repositoryLink.findIndex((element) => element.id === idPublication);
-      this.repositoryLink = [
-        ...this.repositoryLink.slice(defaultValues.zero, index),
-        changeLink,
-        ...this.repositoryLink.slice(index + 1),
-      ];
-
-    return changeLink
-  }
-
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
-
-    idList.forEach((value) => {
-
-      const index = this.repositoryLink
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
-
-      if(index !== -1) {
-      indexId = this.repositoryLink[index].countComments
-      .findIndex((id) => id === value)
+      if (! link) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryLink[index].countComments = [
-          ...this.repositoryLink[index].countComments.slice(0,indexId),
-          ...this.repositoryLink[index].countComments.slice(indexId + 1)
+      if(!link.countLike.includes(idUser)) {
+        link.countLike.push(idUser)
+      } else {
+        const index = link.countLike.findIndex((element) => element === idUser)
+
+        link.countLike = [
+          ...link.countLike.slice(0, index),
+          ...link.countLike.slice(index+1)
         ]
-
-        indicator = true
       }
-    })
 
-    return indicator
+      const updeteLink = await this.prisma.link.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: link.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updeteLink
   }
-    */
 }

@@ -3,11 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { CRUDRepository } from '@project/util/util-types';
 import {
   Video,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogVideoEntity } from './blog-video-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { defaultValues } from '@project/shared-types';
+import { defaultValues, ParameterLike } from '@project/shared-types';
+
+let skip = 0;
 
 @Injectable()
 export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, number, Video> {
@@ -98,121 +102,117 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
   }
 
   public async find(parameter: Parameter): Promise<Video[] | []> {
-    const {count, user, typeSort} = parameter;
+    const {limit, authPublication, typeSort, nameTag} = parameter;
 
-    const videosList = this.prisma.video.findMany({
-      take: Number(count)
-    })
-
-      return videosList;
-  }
-
-  /*
-  public async addLike(parameter: ParameterLike): Promise<Video> {
-    const {nameUser, idPublication} = parameter;
-    let dataVideo: Video
-
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        OR: [
+          {
+            authorPublication: {
+              contains: authPublication,
+            },
+          },
+          {
+            authorPublication: {
+              not: authPublication
+            }
+          }
+        ],
+        setTag: {
+          has: nameTag
         }
-      });
-
-      if(existUser) {
-        dataVideo = await this.findById(idPublication);
-        dataVideo.countLike = dataVideo.countLike - defaultValues.one;
-
-        const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-        this.repositoryVideo = [
-          ...this.repositoryVideo.slice(defaultValues.zero, index),
-          dataVideo,
-          ...this.repositoryVideo.slice(index + 1),
-        ];
-
-        return dataVideo
-      }
-
-    dataVideo = await this.findById(idPublication);
-
-    if(! dataVideo) {
-      return null
-    }
-
-    const changeVideo = {
-      ... dataVideo,
-      countLike: 1
-    }
-
-    const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-      this.repositoryVideo = [
-        ...this.repositoryVideo.slice(defaultValues.zero, index),
-        changeVideo,
-        ...this.repositoryVideo.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changeVideo
-  }
-
-  public async addComment(parameter: ParameterComment): Promise<Video> {
-    const {idComment, idPublication} = parameter;
-
-    const dataVideo = await this.findById(idPublication);
-
-    if(! dataVideo) {
-      return null
+    if(typeSort === TypeSort.Like) {
+      (await videosList).sort((a, b) => b.countLike.length - a.countLike.length)
     }
 
-    dataVideo.countComments.push(idComment)
-
-    const changeVideo = {
-      ... dataVideo,
-      countComments: dataVideo.countComments
+    if(typeSort === TypeSort.Discussed) {
+      (await videosList).sort((a, b) => b.comments.length - a.comments.length)
     }
 
-    const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-      this.repositoryVideo = [
-        ...this.repositoryVideo.slice(defaultValues.zero, index),
-        changeVideo,
-        ...this.repositoryVideo.slice(index + 1),
-      ];
+    skip += limit;
 
-    return changeVideo
+    return videosList
   }
 
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
+  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Video[] | []> {
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        authorPublication: {
+          contains: author
+        },
+        state: {
+          contains: VideoState.Draft
+        }
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
+    })
 
-    idList.forEach((value) => {
+    skip += limit;
 
-      const index = this.repositoryVideo
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
+    return videosList
+  }
 
-      if(index !== -1) {
-      indexId = this.repositoryVideo[index].countComments
-      .findIndex((id) => id === value)
+  public async addLike(parameter: ParameterLike): Promise<Video> {
+    const {idUser, idPublication} = parameter;
+
+    const video = await this.prisma.video.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
+
+      if (! video) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryVideo[index].countComments = [
-          ...this.repositoryVideo[index].countComments.slice(0,indexId),
-          ...this.repositoryVideo[index].countComments.slice(indexId + 1)
+      if(!video.countLike.includes(idUser)) {
+        video.countLike.push(idUser)
+      } else {
+        const index = video.countLike.findIndex((element) => element === idUser)
+
+        video.countLike = [
+          ...video.countLike.slice(0, index),
+          ...video.countLike.slice(index+1)
         ]
-
-        indicator = true
       }
-    })
 
-    return indicator
+      const updeteVideo = await this.prisma.video.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: video.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updeteVideo
   }
-*/
 }

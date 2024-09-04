@@ -7,6 +7,8 @@ import { BlogCommentEntity } from './blog-comment-entity';
 import { PrismaService } from '../prisma/prisma.service';
 import { Publication } from '@project/shared-types';
 
+let skip = 0;
+
 @Injectable()
 export class BlogCommentRepository implements CommentInterface {
   constructor(private readonly prisma: PrismaService){}
@@ -23,7 +25,7 @@ export class BlogCommentRepository implements CommentInterface {
   }
 
   public async findById(idPost: number, count: number): Promise<Comment[] | []> {
-    return await this.prisma.comment.findMany({
+    const commentsList = await this.prisma.comment.findMany({
       where: {
         OR: [
           {
@@ -43,8 +45,13 @@ export class BlogCommentRepository implements CommentInterface {
           }
         ]
       },
+      skip: skip,
       take: count
     })
+
+    skip += count;
+
+    return commentsList
   }
 
   public async destroy(dataPost: Publication): Promise<Prisma.BatchPayload> {

@@ -1,4 +1,4 @@
 export type ParameterLike = {
-  nameUser: string,
-  idPublication: string
+  idUser: string,
+  idPublication: number
 }

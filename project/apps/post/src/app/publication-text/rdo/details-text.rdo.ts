@@ -51,6 +51,7 @@ export class DetailsTextRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

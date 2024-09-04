@@ -3,11 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { CRUDRepository } from '@project/util/util-types';
 import {
   Text,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogTextEntity } from './blog-text-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { defaultValues } from '@project/shared-types';
+import { defaultValues, ParameterLike } from '@project/shared-types';
+
+let skip = 0;
 
 @Injectable()
 export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number, Text> {
@@ -98,121 +102,117 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
   }
 
   public async find(parameter: Parameter): Promise<Text[] | []> {
-    const {count, user, typeSort} = parameter;
+    const {limit, authPublication, typeSort, nameTag} = parameter;
 
-    const textList = this.prisma.text.findMany({
-      take: Number(count)
-    })
-
-      return textList;
-  }
-
-  /*
-  public async addLike(parameter: ParameterLike): Promise<Text> {
-    const {nameUser, idPublication} = parameter;
-    let dataText: Text
-
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+    const textsList = await this.prisma.text.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        OR: [
+          {
+            authorPublication: {
+              contains: authPublication,
+            },
+          },
+          {
+            authorPublication: {
+              not: authPublication
+            }
+          }
+        ],
+        setTag: {
+          has: nameTag
         }
-      });
-
-      if(existUser) {
-        dataText = await this.findById(idPublication);
-        dataText.countLike = dataText.countLike - defaultValues.one;
-
-        const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-        this.repositoryText = [
-          ...this.repositoryText.slice(defaultValues.zero, index),
-          dataText,
-          ...this.repositoryText.slice(index + 1),
-        ];
-
-        return dataText
-      }
-
-    dataText = await this.findById(idPublication);
-
-    if(! dataText) {
-      return null
-    }
-
-    const changeText = {
-      ... dataText,
-      countLike: dataText.countLike + defaultValues.one
-    }
-
-    const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-      this.repositoryText = [
-        ...this.repositoryText.slice(defaultValues.zero, index),
-        changeText,
-        ...this.repositoryText.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changeText
-  }
-
-  public async addComment(parameter: ParameterComment): Promise<Text> {
-    const {idComment, idPublication} = parameter;
-
-    const dataText = await this.findById(idPublication);
-
-    if(! dataText) {
-      return null
+    if(typeSort === TypeSort.Like) {
+      (await textsList).sort((a, b) => b.countLike.length - a.countLike.length)
     }
 
-    dataText.countComments.push(idComment)
-
-    const changeText = {
-      ... dataText,
-      countComments: dataText.countComments
+    if(typeSort === TypeSort.Discussed) {
+      (await textsList).sort((a, b) => b.comments.length - a.comments.length)
     }
 
-    const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-      this.repositoryText = [
-        ...this.repositoryText.slice(defaultValues.zero, index),
-        changeText,
-        ...this.repositoryText.slice(index + 1),
-      ];
+    skip += limit;
 
-    return changeText
+    return textsList;
   }
 
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
+  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Text[] | []> {
+    const textsList = await this.prisma.text.findMany({
+      where: {
+        authorPublication: {
+          contains: author
+        },
+        state: {
+          contains: VideoState.Draft
+        }
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
+    })
 
-    idList.forEach((value) => {
+    skip += limit;
 
-      const index = this.repositoryText
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
+    return textsList
+  }
 
-      if(index !== -1) {
-      indexId = this.repositoryText[index].countComments
-      .findIndex((id) => id === value)
+  public async addLike(parameter: ParameterLike): Promise<Text> {
+    const {idUser, idPublication} = parameter;
+
+    const text = await this.prisma.text.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
+
+      if (! text) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryText[index].countComments = [
-          ...this.repositoryText[index].countComments.slice(0,indexId),
-          ...this.repositoryText[index].countComments.slice(indexId + 1)
+      if(!text.countLike.includes(idUser)) {
+        text.countLike.push(idUser)
+      } else {
+        const index = text.countLike.findIndex((element) => element === idUser)
+
+        text.countLike = [
+          ...text.countLike.slice(0, index),
+          ...text.countLike.slice(index+1)
         ]
-
-        indicator = true
       }
-    })
 
-    return indicator
+      const updeteText = await this.prisma.text.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: text.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updeteText
   }
-    */
 }

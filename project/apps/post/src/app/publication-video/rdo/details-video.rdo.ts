@@ -45,6 +45,7 @@ export class DetailsVideoRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   public countLike: number;
 
   @ApiProperty({

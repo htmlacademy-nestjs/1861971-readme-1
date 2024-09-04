@@ -38,7 +38,7 @@ model Video {
   setTag String[] @map("set_tag")
   authorPublication String @default("") @map("author_publication")
   typePublication String @default("video") @map("type_publication")
-  countLike Int @default(0) @map("count_like")
+  countLike String[] @map("count_like")
   comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
@@ -58,7 +58,7 @@ model Text {
   setTag String[] @map("set_tag")
   authorPublication String @default("") @map("author_publication")
   typePublication String @default("text") @map("type_publication")
-  countLike Int @default(0) @map("count_like")
+  countLike String[] @map("count_like")
   comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
@@ -76,7 +76,7 @@ model Quote {
   setTag String[] @map("set_tag")
   authorQuote String @default("") @map("author_quote")
   typePublication String  @default("quote") @map("type_publication")
-  countLike Int @default(0) @map("count_like")
+  countLike String[] @map("count_like")
   comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
@@ -94,7 +94,7 @@ model Photo {
   setTag String[] @map("set_tag")
   authorPhoto String @default("") @map("author_photo")
   typePublication String  @default("photo") @map("type_publication")
-  countLike Int @default(0) @map("count_like")
+  countLike String[] @map("count_like")
   comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")
@@ -113,7 +113,7 @@ model Link {
   setTag String[] @map("set_tag")
   authorLink String @default("") @map("author_link")
   typePublication String @default("link") @map("type_publication")
-  countLike Int @default(0) @map("count_like")
+  countLike String[] @map("count_like")
   comments Comment[]
   dateCreation DateTime @default(now()) @map("date_creation")
   datePublication DateTime @default(now()) @updatedAt @map("date_publication")

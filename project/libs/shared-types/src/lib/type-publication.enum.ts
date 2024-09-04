@@ -3,5 +3,6 @@ export enum TypePublication {
   Text = 'text',
   Quote = 'quote',
   Photo = 'photo',
-  Link = 'link'
+  Link = 'link',
+  All = 'all'
 }

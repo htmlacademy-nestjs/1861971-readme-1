@@ -4,14 +4,12 @@ import {
   Get,
   Delete,
   Body,
-  Query,
   HttpStatus
  } from '@nestjs/common';
  import {
   ApiTags,
   ApiCreatedResponse,
   ApiFoundResponse,
-  ApiParam,
   ApiResponse
 } from '@nestjs/swagger';
 
@@ -48,15 +46,10 @@ export class PublicationCommentController {
     description: 'Found a comment',
     type: CommentRdo
   })
-  @ApiParam({
-    name: 'count',
-    description: 'User can request next 50 comments',
-    example: 'http://localhost:4000/api/comment/list?count=50'
-  })
   @Get('list')
-  public async index(@Body() {idPost}: Publication, @Query() {count}: {count: string | undefined} ) {
+  public async index(@Body() {idPost}: Publication) {
 
-    const commentsList = await this.publicationCommentService.findById(idPost, count);
+    const commentsList = await this.publicationCommentService.findById(idPost);
     return fillObject(CommentRdo, commentsList)
   }
 
