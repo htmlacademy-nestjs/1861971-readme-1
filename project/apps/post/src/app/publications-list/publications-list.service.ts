@@ -32,7 +32,7 @@ export class PublicationsListService {
   }
 
   public async index(parameter: ParametersList) {
-    const {typePublication = 'All', authPublication = 'All', typeSort = TypeSort.DatePublication, nameTag = null} = parameter;
+    const {typePublication = 'All', idAuthPublication = 'All', typeSort = TypeSort.DatePublication, nameTag = null} = parameter;
 
     let datasList: Video[] | Text[] | Quote[] | Photo[] | Link[] = [];
     const blogList = [
@@ -45,23 +45,23 @@ export class PublicationsListService {
 
     switch (typePublication) {
       case TypePublication.Video:
-        datasList = await this.blogVideoRepository.find({limit: this.limit, authPublication, typeSort, nameTag});
+        datasList = await this.blogVideoRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
         break;
       case TypePublication.Text:
-        datasList = await this.blogTextRepository.find({limit: this.limit, authPublication, typeSort, nameTag});
+        datasList = await this.blogTextRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
         break;
       case TypePublication.Quote:
-        datasList = await this.blogQuoteRepository.find({limit: this.limit, authPublication, typeSort, nameTag});
+        datasList = await this.blogQuoteRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
         break;
       case TypePublication.Photo:
-        datasList = await this.blogPhotoRepository.find({limit: this.limit, authPublication, typeSort, nameTag});
+        datasList = await this.blogPhotoRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
         break;
       case TypePublication.Link:
-        datasList = await this.blogLinkRepository.find({limit: this.limit, authPublication, typeSort, nameTag});
+        datasList = await this.blogLinkRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
         break;
       default:
         for(const element of blogList){
-          const data = await element.find({limit: this.limit, authPublication, typeSort, nameTag})
+          const data = await element.find({limit: this.limit, idAuthPublication, typeSort, nameTag})
           data.forEach((element) => datasList.push(element))
         }
         break;
@@ -70,7 +70,7 @@ export class PublicationsListService {
     return datasList
   }
 
-  public async indexDraft(author: string) {
+  public async indexDraft(idAuthor: string) {
     const datasList: Array<Video | Text | Quote | Photo | Link> = [];
 
     const blogList = [
@@ -82,7 +82,7 @@ export class PublicationsListService {
     ];
 
         for(const element of blogList){
-          const data = await element.draftsList({limit: this.limit, author})
+          const data = await element.draftsList({limit: this.limit, idAuthor})
           data.forEach((element) => datasList.push(element))
         }
 

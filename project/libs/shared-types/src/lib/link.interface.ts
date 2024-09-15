@@ -5,7 +5,7 @@ export interface Link {
   link: string;
   description: string;
   setTag?: string[];
-  authorLink?: string;
+  idAuthorLink?: string;
   typePublication?: string;
   countLike?: string[];
   comments?: Comment[];

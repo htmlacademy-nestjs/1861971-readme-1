@@ -49,7 +49,7 @@ export const MessageQuote = {
 export const MessagePhoto = {
   photo:{
     stringPhoto: 'The "photo" is not valid. Type string',
-    formatsPhoto: 'The "photo" is not valid. Allowed formats: jpg, png'
+    formatsPhoto: 'The "photo" is not valid. ID photos are not valid'
   },
   setTag:{
     lengthArrayWithTags: 'The "setTag" is not valid. The max number of tags in the array is eight',
@@ -99,13 +99,12 @@ export const MessageRegistration = {
   incorrectPassword: 'The "password" is not valid. Min length 6, max length 12',
   incorrectAvatar: {
     stringAvatar: 'The "avatar" is not valid. Type string',
-    formatsAvatar: 'The "avatar" is not valid. Allowed formats: jpeg, png'
+    formatsAvatar: 'The "avatar" is not valid. ID photos are not valid'
   },
   incorrectNewPassword: 'The "newPassword" is not valid. Min length 6, max length 12'
 } as const;
 
 export const MessageLike = {
-  incorrectIdUser: 'The "idUser" is not valid. Type string',
   incorrectTypePublication: 'The "typePublication" is not valid. Could be a value of the following type: "video", "text", "photo", "quote", "link"',
   incorrectIdPublication: 'The "idPublication" is not valid. Type number'
 } as const;
@@ -116,3 +115,18 @@ export const MessageList = {
   incorrectTypePublication: 'The "typePublication" is not valid. The field value can be "video", "text", "quote", "photo", "link", "all"',
   incorrectNameTag: 'The "nameTag" is not valid. Type string'
 } as const;
+
+export const MessageSubscriber = {
+  incorrectEmail: 'The "email" is not valid',
+  incorrectFirstname: 'The "firstname" is not valid. Not empty'
+} as const;
+
+export const UploaderAvatar = {
+  incorrectSize: '500 KB size limits',
+  incorrectType: 'Allowed formats: jpeg, png'
+} as const;
+
+export const UploaderPhoto = {
+  incorrectSize: '1 MB size limits',
+  incorrectType: 'Allowed formats: jpg, png'
+}

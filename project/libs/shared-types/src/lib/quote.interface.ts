@@ -5,6 +5,7 @@ export interface Quote {
   textQuote: string;
   setTag?: string[];
   authorQuote?: string;
+  idAuthorPublication?: string;
   typePublication?: string;
   countLike?: string[];
   comments?: Comment[];

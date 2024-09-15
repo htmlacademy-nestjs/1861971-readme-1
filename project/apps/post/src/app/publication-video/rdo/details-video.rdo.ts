@@ -32,7 +32,7 @@ export class DetailsVideoRdo {
     example: 'Vlad'
   })
   @Expose()
-  public authorPublication: string;
+  public idAuthorPublication: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',

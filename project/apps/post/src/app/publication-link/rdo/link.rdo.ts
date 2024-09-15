@@ -29,10 +29,10 @@ export class Link {
   setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    example: 'vjas435-ty65'
   })
   @Expose()
-  authorLink: string;
+  idAuthorLink: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',

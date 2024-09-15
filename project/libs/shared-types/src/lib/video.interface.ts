@@ -5,7 +5,7 @@ export interface Video {
   namePublication: string;
   linkVideo: string;
   setTag?: string[];
-  authorPublication?: string;
+  idAuthorPublication?: string;
   typePublication?: string;
   countLike?: string[];
   comments?: Comment[];

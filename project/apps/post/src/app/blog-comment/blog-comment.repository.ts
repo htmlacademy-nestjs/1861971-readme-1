@@ -55,7 +55,7 @@ export class BlogCommentRepository implements CommentInterface {
   }
 
   public async destroy(dataPost: Publication): Promise<Prisma.BatchPayload> {
-    const {idPost, authorComment} = dataPost;
+    const {idPost, idAuthorComment} = dataPost;
     const informationDeleteComments = await this.prisma.comment.deleteMany({
       where: {
         OR: [
@@ -76,7 +76,7 @@ export class BlogCommentRepository implements CommentInterface {
           }
         ],
         AND: {
-          authorComment: authorComment
+          idAuthorComment: idAuthorComment
         }
       }
     })

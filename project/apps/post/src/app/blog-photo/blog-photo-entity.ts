@@ -3,6 +3,7 @@ import { Photo } from '@project/shared-types'
 export class BlogPhotoEntity implements Photo {
   public photo: string;
   public setTag: string[];
+  public idAuthorPhoto: string;
   public state: string;
   public originolAuthor: '';
   public repost: '';
@@ -16,6 +17,7 @@ export class BlogPhotoEntity implements Photo {
     return {
       photo: this.photo,
       setTag: this.setTag,
+      idAuthorPhoto: this.idAuthorPhoto,
       state: this.state,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
@@ -26,6 +28,7 @@ export class BlogPhotoEntity implements Photo {
   public fillEntity(dataPhoto: Photo) {
     this.photo = dataPhoto.photo;
     this.setTag = dataPhoto.setTag;
+    this.idAuthorPhoto = dataPhoto.idAuthorPhoto;
     this.state = dataPhoto.state,
     this.originolAuthor = '';
     this.repost = '';

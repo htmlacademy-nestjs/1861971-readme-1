@@ -2,7 +2,8 @@ import {
   Controller,
   Get,
   Body,
-  Query
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,8 @@ import { Text } from '../publication-text/rdo/text.rdo';
 import { Quote } from '../publication-quote/rdo/quote.rdo';
 import { Photo } from '../publication-photo/rdo/photo.rdo';
 import { Link } from '../publication-link/rdo/link.rdo';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { TokenPayload } from '@project/shared-types';
 
 @ApiTags('publications')
 @Controller('publications')
@@ -79,10 +82,13 @@ export class PublicationsListController {
     required: true,
     example: 'http://localhost:4000/api/publications/drafts?author=Vlad'
   })
+  @UseGuards(JwtAuthGuard)
   @Get('drafts')
-  public async indexDrafts(@Query() author: string) {
+  public async indexDrafts(@Request() req) {
+    const {id} = req.user as TokenPayload
+
     const postsList: Array<Video | Text | Quote | Photo | Link> = [];
-    const publicationsList = await this.publicationsListService.indexDraft(author);
+    const publicationsList = await this.publicationsListService.indexDraft(id);
 
     if(publicationsList.length === 0) {return publicationsList};
 

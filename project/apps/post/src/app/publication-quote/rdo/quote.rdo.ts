@@ -28,6 +28,12 @@ export class Quote {
   authorQuote: string;
 
   @ApiProperty({
+    example: '650-gtr3'
+  })
+  @Expose()
+  idAuthorPublication: string;
+
+  @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
     example: 'quote'
   })

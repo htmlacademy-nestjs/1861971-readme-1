@@ -13,16 +13,21 @@ export class PublicationTextService {
     private readonly blogTextRepository: BlogTextRepository
   ){}
 
-  public async create(dto: CreateTextDto) {
+  public async create(dto: CreateTextDto, idUser: string) {
+    const text = {
+      ...dto,
+      idAuthorPublication: idUser
+    }
+
     let updateText: Text
     const {setTag} = dto
 
     if(setTag) {
-    const returnTextWithTagsListToLowercase = castingToLowercase<Text>(dto)
+    const returnTextWithTagsListToLowercase = castingToLowercase<Text>(text)
     updateText = removDuplicates (returnTextWithTagsListToLowercase)
     }
 
-    const textEntity = new BlogTextEntity(updateText ?? dto)
+    const textEntity = new BlogTextEntity(updateText ?? text)
 
     return await this.blogTextRepository
       .create(textEntity);
@@ -56,5 +61,15 @@ public async update(id: number, dataText: Text) {
   }
 
   return editedText
+}
+
+public async addRepost(idPublication: string, idUser: string) {
+  const publication = await this.blogTextRepository.repost(idPublication, idUser);
+
+  if (! publication) {
+    throw new NotFoundException(ValuePublicationText.TextNotFoundFoRepost);
+  }
+
+  return publication
 }
 }

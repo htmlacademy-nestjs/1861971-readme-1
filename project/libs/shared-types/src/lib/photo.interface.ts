@@ -4,7 +4,7 @@ export interface Photo {
   id?: number
   photo: string;
   setTag?: string[];
-  authorPhoto?: string;
+  idAuthorPhoto?: string;
   typePublication?: string;
   countLike?: string[];
   comments?: Comment[];

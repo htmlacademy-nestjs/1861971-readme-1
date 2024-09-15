@@ -1,6 +1,7 @@
 import {plainToInstance, ClassConstructor} from 'class-transformer';
 import {compare, genSalt, hash} from 'bcrypt';
 import {ValidatorConstraint, ValidatorConstraintInterface} from 'class-validator';
+import {Types} from 'mongoose';
 
 import {SALT_ROUNDS} from '@project/util/util-types'
 import {
@@ -37,6 +38,13 @@ export const getMongoURI = (
   host: string,
   port: string
 ): string => `mongodb://${username}:${password}@${host}:${port}/`;
+
+export const getRabbitMQConnectionString = (
+  user: string,
+  password: string,
+  host: string,
+  port: string
+): string => `amqp://${user}:${password}@${host}:${port}`;
 
 @ValidatorConstraint({ name: 'linkVideo', async: false })
 export class ValidationLinkVideo implements ValidatorConstraintInterface {
@@ -77,18 +85,13 @@ export class ValidationGapTag implements ValidatorConstraintInterface {
 }
 
 @ValidatorConstraint({ name: 'photo', async: false })
-export class ValidationPhoto implements ValidatorConstraintInterface {
+export class ValidationIdPhoto implements ValidatorConstraintInterface {
   validate(photo: string) {
-    let value = false;
-    const valuesList: string[] = photo.split('.')
-    const nameFormat = valuesList[valuesList.length -1]
+    let value = true;
 
-    formatsList.forEach((item) => {
-      if(item === nameFormat) {
-        value = true;
-        return
-      }
-    })
+    if (!Types.ObjectId.isValid(photo)) {
+      value = false
+    }
 
     return value
   }

@@ -19,12 +19,14 @@ import { UserRdo } from './rdo/user.rdo';
 import {DetailsUserRdo} from './rdo/details-user.rdo'
 import {fillObject} from '@project/util-core';
 import {MongoIdValidationPipe} from '@project/shared-pipes';
+import { NotifyService } from '../notify/notify.service';
 
 @ApiTags('registration')
 @Controller('user')
 export class RegistrationController {
   constructor(
-    private readonly registrationService: RegistrationService
+    private readonly registrationService: RegistrationService,
+    private readonly notifyService: NotifyService,
   ) {}
 
   @ApiCreatedResponse({
@@ -39,6 +41,8 @@ export class RegistrationController {
   @Post('register')
   public async create(@Body() dto: CreateUserDto) {
     const newUser = await this.registrationService.register(dto);
+    const {email, firstName} = newUser;
+    await this.notifyService.registerSubscriber({email, firstname: firstName})
     return fillObject(UserRdo, newUser);
   }
 

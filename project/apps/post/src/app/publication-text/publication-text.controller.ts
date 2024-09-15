@@ -6,7 +6,9 @@ import {
   Patch,
   Body,
   Param,
-  HttpStatus
+  HttpStatus,
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,6 +24,8 @@ import { CreateTextDto } from './dto/creat-text.dto';
 import {fillObject} from '@project/util-core';
 import { DetailsTextRdo } from './rdo/details-text.rdo';
 import { Text } from './rdo/text.rdo';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { TokenPayload } from '@project/shared-types';
 
 @ApiTags('text')
 @Controller('text')
@@ -34,9 +38,12 @@ export class PublicationTextController {
     description: 'Video publication created',
     type: DetailsTextRdo
   })
+  @UseGuards(JwtAuthGuard)
   @Post('publication')
-  public async create(@Body() dto: CreateTextDto) {
-    const newText = await this.publicationTextService.create(dto);
+  public async create(@Request() req, @Body() dto: CreateTextDto) {
+    const {id} = req.user as TokenPayload
+
+    const newText = await this.publicationTextService.create(dto, id);
     return fillObject(DetailsTextRdo, newText);
   }
 
@@ -68,6 +75,7 @@ export class PublicationTextController {
     description: 'Unique text id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteText = await this.publicationTextService.delete(Number(id));
@@ -88,10 +96,19 @@ export class PublicationTextController {
     description: 'Unique text id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateTextDto) {
-
     const editedText = await this.publicationTextService.update(Number(id), dto);
     return fillObject(DetailsTextRdo, editedText);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':idPublication')
+  public async repost(@Request() req, @Param('idPublication') idPublication: string) {
+    const {id} = req.user as TokenPayload
+
+    const publication = await this.publicationTextService.addRepost(idPublication, id);
+    return fillObject(Text, publication);
   }
 }

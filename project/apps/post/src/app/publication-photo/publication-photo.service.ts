@@ -13,16 +13,21 @@ export class PublicationPhotoService {
     private readonly blogPhotoRepository: BlogPhotoRepository
   ){}
 
-  public async create(dto: CreatePhotoDto) {
+  public async create(dto: CreatePhotoDto, idUser: string) {
+    const photo = {
+      ...dto,
+      idAuthorPublication: idUser
+    }
+
     let updatePhoto: Photo
     const {setTag} = dto
 
     if(setTag) {
-    const returnPhotoWithTagsListToLowercase = castingToLowercase<Photo>(dto)
+    const returnPhotoWithTagsListToLowercase = castingToLowercase<Photo>(photo)
     updatePhoto = removDuplicates (returnPhotoWithTagsListToLowercase)
     }
 
-    const photoEntity = new BlogPhotoEntity(updatePhoto ?? dto)
+    const photoEntity = new BlogPhotoEntity(updatePhoto ?? photo)
 
     return await this.blogPhotoRepository
       .create(photoEntity);
@@ -56,5 +61,15 @@ public async update(id: number, dataPhoto: Photo) {
   }
 
   return editedPhoto
+}
+
+public async addRepost(idPublication: string, idUser: string) {
+  const publication = await this.blogPhotoRepository.repost(idPublication, idUser);
+
+  if (! publication) {
+    throw new NotFoundException(ValuePublicationPhoto.PhotoNotFoundFoRepost);
+  }
+
+  return publication
 }
 }

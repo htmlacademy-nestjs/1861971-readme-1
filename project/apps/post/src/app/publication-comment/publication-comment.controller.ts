@@ -4,7 +4,9 @@ import {
   Get,
   Delete,
   Body,
-  HttpStatus
+  HttpStatus,
+  UseGuards,
+  Request
  } from '@nestjs/common';
  import {
   ApiTags,
@@ -13,11 +15,13 @@ import {
   ApiResponse
 } from '@nestjs/swagger';
 
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CreateCommentDto } from './dto/creat-comment.dto';
 import { CommentRdo } from './rdo/comment.rdo';
 import { Publication } from './dto/id-list.dto';
 import { PublicationCommentService } from './publication-comment.service';
 import { fillObject } from '@project/util-core';
+import { TokenPayload } from '@project/shared-types';
 
 @ApiTags('comment')
 @Controller('comment')
@@ -30,12 +34,14 @@ export class PublicationCommentController {
     description: 'Comment publication created',
     type: CommentRdo
   })
+  @UseGuards(JwtAuthGuard)
   @Post('create')
-  public async create(@Body() dto: CreateCommentDto) {
+  public async create(@Request() req, @Body() dto: CreateCommentDto) {
+    const {id} = req.user as TokenPayload
 
     const updateDto = {
       ...dto,
-      authorComment: 'Vlad'
+      idAuthorComment: id
     }
 
     const existComment = await this.publicationCommentService.create(updateDto);
@@ -48,7 +54,6 @@ export class PublicationCommentController {
   })
   @Get('list')
   public async index(@Body() {idPost}: Publication) {
-
     const commentsList = await this.publicationCommentService.findById(idPost);
     return fillObject(CommentRdo, commentsList)
   }
@@ -58,12 +63,14 @@ export class PublicationCommentController {
     description: 'Comment or comments deleted',
     example: 'Comments have been 4 deleted'
   })
+  @UseGuards(JwtAuthGuard)
   @Delete('delete')
-  public async delete(@Body() dataPost: Publication) {
+  public async delete(@Request() req, @Body() dataPost: Publication) {
+    const {id} = req.user as TokenPayload
 
     const updateDataPost = {
       ...dataPost,
-      authorComment: 'Vlad'
+      idAuthorComment: id
     }
 
     const {count} = await this.publicationCommentService.delete(updateDataPost);

@@ -7,7 +7,7 @@ import {
   Validate
 } from 'class-validator';
 
-import { ValidationPhoto } from '@project/util-core';
+import { ValidationIdPhoto } from '@project/util-core';
 import {MessageRegistration} from '@project/validation-message';
 
 const {
@@ -48,12 +48,12 @@ export class CreateUserDto {
   public password: string;
 
   @ApiProperty({
-    description: 'Photo for user avatar. Restrictions: no more than 500 kilobytes, jpeg or png format.',
+    description: 'Indicate avatar ID',
     required: true,
-    example: 'Yna.png'
+    example: '5643drs78op'
   })
   @IsOptional()
   @IsString({message: incorrectAvatar.stringAvatar})
-  @Validate(ValidationPhoto, {message: incorrectAvatar.formatsAvatar})
+  @Validate(ValidationIdPhoto, {message: incorrectAvatar.formatsAvatar})
   public avatar: string;
 }

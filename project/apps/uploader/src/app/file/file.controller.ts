@@ -1,8 +1,11 @@
 import {
   Controller,
+  FileTypeValidator,
   Get,
   Inject,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   UploadedFile,
   UseInterceptors
@@ -24,6 +27,9 @@ import { UploadedFileRdo } from './rdo/uploaded-file.rdo';
 import { appConfig } from '@project/config-uploader';
 import { ConfigType } from '@nestjs/config';
 import {MongoIdValidationPipe} from '@project/shared-pipes';
+import { UploaderAvatar, UploaderPhoto } from '@project/validation-message';
+import { FileTypeValidatorPipe } from '@project/shared-pipes';
+
 
 @ApiTags('file')
 @Controller('files')
@@ -37,16 +43,42 @@ export class FileController {
   ) {}
 
   @ApiCreatedResponse({
-    description: 'Image created',
+    description: 'Avatar created',
     type: UploadedFileRdo
   })
-  @Post('/upload')
-  @UseInterceptors(FileInterceptor('file'))
-  public async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  @Post('/avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  public async uploadAvatar(@UploadedFile(new FileTypeValidatorPipe(), new ParseFilePipe({
+    validators: [
+      new MaxFileSizeValidator({maxSize: 500000, message: UploaderAvatar.incorrectSize}),
+    ],
+    fileIsRequired: false
+  })) file: Express.Multer.File
+  ) {
     const newFile = await this.fileService.saveFile(file);
     const path = `${this.applicationConfig.serveRoot}${newFile.path}`;
     return fillObject(UploadedFileRdo, Object.assign(newFile, { path }));
   }
+
+
+  @ApiCreatedResponse({
+    description: 'Avatar created',
+    type: UploadedFileRdo
+  })
+  @Post('/photo')
+  @UseInterceptors(FileInterceptor('photo'))
+  public async uploadPhoto(@UploadedFile(new FileTypeValidatorPipe(), new ParseFilePipe({
+    validators: [
+      new MaxFileSizeValidator({maxSize: 1000000, message: UploaderPhoto.incorrectSize}),
+      new FileTypeValidator({fileType: 'image/png'})
+    ]
+  })) file: Express.Multer.File
+  ) {
+    const newFile = await this.fileService.saveFile(file);
+    const path = `${this.applicationConfig.serveRoot}${newFile.path}`;
+    return fillObject(UploadedFileRdo, Object.assign(newFile, { path }));
+  }
+
 
   @ApiFoundResponse({
     description: 'Found a image',

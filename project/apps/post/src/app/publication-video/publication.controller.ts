@@ -6,7 +6,9 @@ import {
   Param,
   Delete,
   Patch,
-  HttpStatus
+  HttpStatus,
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,6 +24,8 @@ import { CreateVideoDto } from './dto/creat-video.dto';
 import {fillObject} from '@project/util-core';
 import { DetailsVideoRdo } from './rdo/details-video.rdo';
 import { Video } from './rdo/video.rdo';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { TokenPayload } from '@project/shared-types';
 
 @ApiTags('video')
 @Controller('video')
@@ -34,9 +38,12 @@ export class PublicationController {
     description: 'Video publication created',
     type: DetailsVideoRdo
   })
+  @UseGuards(JwtAuthGuard)
   @Post('publication')
-  public async create(@Body() dto: CreateVideoDto) {
-    const newVideo = await this.publicationService.create(dto);
+  public async create(@Request() req, @Body() dto: CreateVideoDto) {
+    const {id} = req.user as TokenPayload
+
+    const newVideo = await this.publicationService.create(dto, id);
     return fillObject(DetailsVideoRdo, newVideo);
   }
 
@@ -68,6 +75,7 @@ export class PublicationController {
     description: 'Unique video id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteVideo = await this.publicationService.delete(Number(id));
@@ -88,10 +96,19 @@ export class PublicationController {
     description: 'Unique video id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateVideoDto) {
-
     const editedVideo = await this.publicationService.update(Number(id), dto);
     return fillObject(DetailsVideoRdo, editedVideo);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':idPublication')
+  public async repost(@Request() req, @Param('idPublication') idPublication: string) {
+    const {id} = req.user as TokenPayload
+
+    const publication = await this.publicationService.addRepost(idPublication, id);
+    return fillObject(Video, publication);
   }
 }

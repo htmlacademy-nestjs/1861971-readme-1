@@ -38,7 +38,7 @@ export class DetailsTextRdo {
     example: 'Vlad'
   })
   @Expose()
-  public authorPublication: string;
+  public idAuthorPublication: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',

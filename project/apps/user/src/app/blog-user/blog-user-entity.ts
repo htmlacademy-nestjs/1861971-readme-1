@@ -1,4 +1,4 @@
-import {genSalt, hash, compare} from 'bcrypt'
+import {genSalt, hash} from 'bcrypt'
 
 import {User} from '@project/shared-types'
 import {SALT_ROUNDS} from '@project/util/util-types'

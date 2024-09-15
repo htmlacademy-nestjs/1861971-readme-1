@@ -13,16 +13,21 @@ export class PublicationLinkService {
     private readonly blogLinkRepository: BlogLinkRepository
   ){}
 
-  public async create(dto: CreateLinkDto) {
+  public async create(dto: CreateLinkDto, idUser: string) {
+    const link = {
+      ...dto,
+      idAuthorPublication: idUser
+    }
+
     let updateLink: Link
     const {setTag} = dto
 
     if(setTag) {
-    const returnLinkWithTagsListToLowercase = castingToLowercase<Link>(dto)
+    const returnLinkWithTagsListToLowercase = castingToLowercase<Link>(link)
     updateLink = removDuplicates (returnLinkWithTagsListToLowercase)
     }
 
-    const linkEntity = new BlogLinkEntity(updateLink ?? dto)
+    const linkEntity = new BlogLinkEntity(updateLink ?? link)
 
     return await this.blogLinkRepository
       .create(linkEntity);
@@ -56,5 +61,15 @@ public async update(id: number, dataLink: Link) {
   }
 
   return editedLink
+}
+
+public async addRepost(idPublication: string, idUser: string) {
+  const publication = await this.blogLinkRepository.repost(idPublication, idUser);
+
+  if (! publication) {
+    throw new NotFoundException(ValuePublicationLink.LinkNotFoundFoRepost);
+  }
+
+  return publication
 }
 }

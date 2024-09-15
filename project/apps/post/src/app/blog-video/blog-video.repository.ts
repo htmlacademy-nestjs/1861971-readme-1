@@ -102,7 +102,7 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
   }
 
   public async find(parameter: Parameter): Promise<Video[] | []> {
-    const {limit, authPublication, typeSort, nameTag} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
     const videosList = await this.prisma.video.findMany({
       where: {
@@ -111,50 +111,46 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
         },
         OR: [
           {
-            authorPublication: {
-              contains: authPublication,
+            idAuthorPublication: {
+              contains: idAuthPublication,
             },
           },
           {
-            authorPublication: {
-              not: authPublication
+            idAuthorPublication: {
+              not: idAuthPublication
             }
-          }
+          },
+          {
+            setTag: {
+              has: nameTag
+            }
+          },
         ],
-        setTag: {
-          has: nameTag
-        }
       },
       include: {
         comments: true
       },
-      orderBy: [
-        {
-          datePublication: 'desc'
+      orderBy: {
+        _relevance: {
+          search: typeSort,
+          sort: 'desc',
+          fields: 'setTag'
         }
-      ],
+      },
       skip: skip,
       take: limit,
     })
-
-    if(typeSort === TypeSort.Like) {
-      (await videosList).sort((a, b) => b.countLike.length - a.countLike.length)
-    }
-
-    if(typeSort === TypeSort.Discussed) {
-      (await videosList).sort((a, b) => b.comments.length - a.comments.length)
-    }
 
     skip += limit;
 
     return videosList
   }
 
-  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Video[] | []> {
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Video[] | []> {
     const videosList = await this.prisma.video.findMany({
       where: {
-        authorPublication: {
-          contains: author
+        idAuthorPublication: {
+          contains: idAuthor
         },
         state: {
           contains: VideoState.Draft
@@ -214,5 +210,67 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
       })
 
       return updeteVideo
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Video | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.video.findFirst({
+      where: {
+        idAuthorPublication: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
+
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorPublication: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.video.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
 }

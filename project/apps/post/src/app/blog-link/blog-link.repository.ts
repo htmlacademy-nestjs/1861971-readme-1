@@ -9,7 +9,7 @@ import {
  } from '@project/shared-types';
 import { BlogLinkEntity } from './blog-link-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { ParameterLike } from '@project/shared-types';
+import { ParameterLike, defaultValues } from '@project/shared-types';
 
 let skip = 0;
 
@@ -86,7 +86,7 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
   }
 
   public async find(parameter: Parameter): Promise<Link[]> {
-    const {limit, authPublication, typeSort, nameTag} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
     const linkList = await this.prisma.link.findMany({
       where: {
@@ -95,28 +95,32 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
         },
         OR: [
           {
-            authorLink: {
-              contains: authPublication,
+            idAuthorLink: {
+              contains: idAuthPublication,
             },
           },
           {
-            authorLink: {
-              not: authPublication
+            idAuthorLink: {
+              not: idAuthPublication
             }
-          }
+          },
+          {
+            setTag: {
+              has: nameTag
+            }
+          },
         ],
-        setTag: {
-          has: nameTag
-        }
       },
       include: {
         comments: true
       },
-      orderBy: [
-        {
-          datePublication: 'desc'
+      orderBy: {
+        _relevance: {
+          search: typeSort,
+          sort: 'desc',
+          fields: 'setTag'
         }
-      ],
+      },
       skip: skip,
       take: limit,
     })
@@ -134,11 +138,11 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
     return linkList;
   }
 
-  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Link[] | []> {
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Link[] | []> {
     const linksList = await this.prisma.link.findMany({
       where: {
-        authorLink: {
-          contains: author
+        idAuthorLink: {
+          contains: idAuthor
         },
         state: {
           contains: VideoState.Draft
@@ -198,5 +202,67 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
       })
 
       return updeteLink
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Link | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.link.findFirst({
+      where: {
+        idAuthorLink: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
+
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorLink: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.link.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
 }

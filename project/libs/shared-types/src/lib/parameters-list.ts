@@ -14,7 +14,7 @@ export class ParametersList  {
     example: 'Alex'
   })
   @IsString({message: MessageList.incorrectAuthPublication})
-  public authPublication?: string;
+  public idAuthPublication?: string;
 
   @ApiProperty({
     description: 'Sorting type: "datePublication", "like", "discussed"',

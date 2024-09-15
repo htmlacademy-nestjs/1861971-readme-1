@@ -2,7 +2,7 @@ import { Comment } from '@project/shared-types';
 
 export class BlogCommentEntity implements Comment {
   public text: string;
-  public authorComment: string;
+  public idAuthorComment: string;
   public idVideo: number;
   public idText: number;
   public idQuote: number;
@@ -16,7 +16,7 @@ export class BlogCommentEntity implements Comment {
   public toObject() {
     return {
       text: this.text,
-      authorComment: this.authorComment,
+      idAuthorComment: this.idAuthorComment,
       idVideo: this.idVideo,
       idText: this.idText,
       idQuote: this.idQuote,
@@ -27,7 +27,7 @@ export class BlogCommentEntity implements Comment {
 
   public fillEntity(dataComment: Comment) {
     this.text = dataComment.text;
-    this.authorComment = dataComment.authorComment;
+    this.idAuthorComment = dataComment.idAuthorComment;
     this.idVideo = dataComment.idVideo;
     this.idText = dataComment.idText;
     this.idQuote = dataComment.idQuote;

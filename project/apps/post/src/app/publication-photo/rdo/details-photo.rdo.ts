@@ -25,7 +25,7 @@ export class DetailsPhotoRdo {
     example: 'Vlad'
   })
   @Expose()
-  public authorPhoto: string;
+  public idAuthorPhoto: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',

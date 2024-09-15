@@ -16,10 +16,10 @@ export class CommentRdo {
   text: string;
 
   @ApiProperty({
-    example: 'Vlad'
+    example: '66e1a8ab87570b7425c6dec0'
   })
   @Expose()
-  authorComment: string;
+  idAuthorComment: string;
 
   @ApiProperty({
     example: "2024-08-26 16:22:20.853"

@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 
 import { MessagePhoto } from '@project/validation-message';
-import {ValidationPhoto, ValidationLengthTag, ValidationGapTag} from '@project/util-core';
+import {ValidationIdPhoto, ValidationLengthTag, ValidationGapTag} from '@project/util-core';
 import {VideoState} from '@project/shared-types';
 
 const {
@@ -19,12 +19,12 @@ const {
 
 export class CreatePhotoDto {
   @ApiProperty({
-    description: 'Maximum photo size: 1 megabyte. Accepted formats: jpg, png',
+    description: 'Indicate photo ID',
     required: true,
-    example: 'bild.jpg'
+    example: '67896554rte5r'
   })
   @IsString({message: `${photo.stringPhoto}`})
-  @Validate(ValidationPhoto, {
+  @Validate(ValidationIdPhoto, {
     message: photo.formatsPhoto
   })
   public photo: string;

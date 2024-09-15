@@ -29,10 +29,10 @@ export class Video {
   setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    example: '6785ft8'
   })
   @Expose()
-  authorPublication: string;
+  idAuthorPublication: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',

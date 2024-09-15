@@ -17,3 +17,5 @@ export * from './lib/paramerter-comment.type';
 export * from './lib/file.interface';
 export * from './lib/publication.type';
 export * from './lib/token-payload.interface'
+export * from './lib/rabbit-routing.enum';
+export * from './lib/subscriber.interface';

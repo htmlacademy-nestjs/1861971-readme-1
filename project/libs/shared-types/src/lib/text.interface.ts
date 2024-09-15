@@ -6,7 +6,7 @@ export interface Text {
   announcementPublication: string;
   textPublication: string;
   setTag?: string[];
-  authorPublication?: string;
+  idAuthorPublication?: string;
   typePublication?: string;
   countLike?: string[];
   comments?: Comment[];

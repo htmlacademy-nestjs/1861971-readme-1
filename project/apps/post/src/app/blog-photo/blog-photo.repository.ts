@@ -9,7 +9,7 @@ import {
  } from '@project/shared-types';
 import { BlogPhotoEntity } from './blog-photo-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { ParameterLike } from '@project/shared-types';
+import { ParameterLike, defaultValues } from '@project/shared-types';
 
 let skip = 0;
 
@@ -86,7 +86,7 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
   }
 
   public async find(parameter: Parameter): Promise<Photo[] | []> {
-    const {limit, authPublication, typeSort, nameTag} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
     const photoList = await this.prisma.photo.findMany({
       where: {
@@ -95,28 +95,32 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
         },
         OR: [
           {
-            authorPhoto: {
-              contains: authPublication,
+            idAuthorPhoto: {
+              contains: idAuthPublication,
             },
           },
           {
-            authorPhoto: {
-              not: authPublication
+            idAuthorPhoto: {
+              not: idAuthPublication
             }
-          }
+          },
+          {
+            setTag: {
+              has: nameTag
+            }
+          },
         ],
-        setTag: {
-          has: nameTag
-        }
       },
       include: {
         comments: true
       },
-      orderBy: [
-        {
-          datePublication: 'desc'
+      orderBy: {
+        _relevance: {
+          search: typeSort,
+          sort: 'desc',
+          fields: 'setTag'
         }
-      ],
+      },
       skip: skip,
       take: limit,
     })
@@ -134,11 +138,11 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
     return photoList;
   }
 
-  public async draftsList({limit, author}: {limit: number, author: string}): Promise<Photo[] | []> {
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Photo[] | []> {
     const photosList = await this.prisma.photo.findMany({
       where: {
-        authorPhoto: {
-          contains: author
+        idAuthorPhoto: {
+          contains: idAuthor
         },
         state: {
           contains: VideoState.Draft
@@ -198,5 +202,67 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
       })
 
       return updetePhoto
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Photo | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.photo.findFirst({
+      where: {
+        idAuthorPhoto: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
+      }
+    })
+
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorPhoto: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.photo.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
 }

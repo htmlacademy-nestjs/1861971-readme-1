@@ -37,8 +37,8 @@ export class PublicationLikeService {
     private readonly blogLinkRepository: BlogLinkRepository
   ){}
 
-  public async show(parameter: LikeDto) {
-    const {typePublication, idUser, idPublication} = parameter;
+  public async show(parameter: LikeDto, idUser: string) {
+    const {typePublication, idPublication} = parameter;
 
     switch (typePublication) {
       case TypePublication.Video: {

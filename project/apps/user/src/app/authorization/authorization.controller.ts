@@ -21,7 +21,6 @@ import { ChangPasswordUserDto } from './dto/chang-password-user.dto';
 import {fillObject} from '@project/util-core'
 import { UserRdo } from '../registration/rdo/user.rdo';
 import {MongoIdValidationPipe} from '@project/shared-pipes';
-import { JwtTokenRdo } from './rdo/jwt-token.rdo';
 
 @ApiTags('authorization')
 @Controller('user')
