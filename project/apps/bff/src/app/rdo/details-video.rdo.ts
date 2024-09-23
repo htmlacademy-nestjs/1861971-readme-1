@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
 
 import { UserRdo } from './user.rdo';
@@ -47,14 +47,12 @@ export class DetailsVideoRdo {
     example: 2
   })
   @Expose()
-  @Transform(({ value }) => value.length)
   public countLike: number;
 
   @ApiProperty({
     example: 3
   })
-  @Expose({name: 'comments'})
-  @Transform(({ value }) => value.length)
+  @Expose()
   public commentCounter: number;
 
   @ApiProperty({

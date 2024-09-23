@@ -19,3 +19,5 @@ export * from './lib/publication.type';
 export * from './lib/token-payload.interface'
 export * from './lib/rabbit-routing.enum';
 export * from './lib/subscriber.interface';
+export * from './lib/configuration-axios.enum';
+export * from './lib/application-service-url.enum';

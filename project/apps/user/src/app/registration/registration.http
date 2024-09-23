@@ -12,4 +12,4 @@ Content-Type: application/json
 ###
 
 # Get user by ID
-GET http://localhost:4000/api/user/register/66cd70fe08e4005f86d14736 HTTP/1.1
+GET http://localhost:4500/api/user/register/66cd70fe08e4005f86d14736 HTTP/1.1

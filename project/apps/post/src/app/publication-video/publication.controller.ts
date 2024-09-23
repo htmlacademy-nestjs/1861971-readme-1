@@ -44,7 +44,12 @@ export class PublicationController {
     const {id} = req.user as TokenPayload
 
     const newVideo = await this.publicationService.create(dto, id);
-    return fillObject(DetailsVideoRdo, newVideo);
+
+    const video = {
+      ...newVideo,
+      nameAuthor: req.user
+    }
+    return fillObject(DetailsVideoRdo, video);
   }
 
   @ApiFoundResponse({
@@ -98,9 +103,14 @@ export class PublicationController {
   })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  public async update(@Param('id') id: string, @Body() dto: CreateVideoDto) {
+  public async update(@Request() req, @Param('id') id: string, @Body() dto: CreateVideoDto) {
     const editedVideo = await this.publicationService.update(Number(id), dto);
-    return fillObject(DetailsVideoRdo, editedVideo);
+
+    const video = {
+      ...editedVideo,
+      nameAuthor: req.user
+    }
+    return fillObject(DetailsVideoRdo, video);
   }
 
   @UseGuards(JwtAuthGuard)

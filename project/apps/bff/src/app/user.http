@@ -1,0 +1,51 @@
+# Upload some avatar
+POST http://localhost:3500/api/user/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="cat.jpeg"
+Content-Type: image/jpeg
+
+< C:\Users\User\Desktop\1861971-readme-1\project\apps\uploader\img\cat.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# Create a new user
+POST http://localhost:3500/api/user/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "sveta.v@yandex.ru",
+  "firstName": "Sveta",
+  "password": "Volga34",
+  "avatar": "66eedb09427ebd98f6ff636e"
+}
+
+###
+
+# Get user by ID
+GET http://localhost:3500/api/user/register/66eb1e1a63d5a46bb5481402 HTTP/1.1
+
+###
+
+# Authorization user
+POST http://localhost:3500/api/user/authorization HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "sveta.v@yandex.ru",
+  "password": "Volga34"
+}
+
+###
+
+# Chang user password
+PATCH  http://localhost:3500/api/user/authorization/66eb1e1a63d5a46bb5481402 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWIxZTFhNjNkNWE0NmJiNTQ4MTQwMiIsImVtYWlsIjoiYWxleC52QHlhbmRleC5ydSIsImZpcnN0TmFtZSI6IkFsZXhzIiwiYXZhdGFyIjoiNjZlYjFkNTAyYjFjNTljZTBlNTVlNGViIiwiaWF0IjoxNzI2NzcxODEyLCJleHAiOjE3MjY3NzMwMTJ9.TgMZIsvQ1aCHKr5RsozteaDnwlQEPU-LBq5NLvw92vo
+
+{
+  "password": "Volga34",
+  "newPassword": "V34Vlad"
+}

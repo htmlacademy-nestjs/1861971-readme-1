@@ -43,7 +43,8 @@
         "apps/uploader-e2e/**/*",
         "apps/notify-e2e/**/*",
         "apps/notify/notify-e2e/**/*",
-        "apps/notify-e2e/**/*"
+        "apps/notify-e2e/**/*",
+        "apps/bff-e2e/**/*"
       ]
     }
   ]

@@ -4,8 +4,7 @@ import { CRUDRepository } from '@project/util/util-types';
 import {
   Text,
   Parameter,
-  VideoState,
-  TypeSort
+  VideoState
  } from '@project/shared-types';
 import { BlogTextEntity } from './blog-text-entity';
 import { PrismaService } from '../prisma/prisma.service';
