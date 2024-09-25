@@ -12,6 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ParameterLike, defaultValues } from '@project/shared-types';
 
 let skip = 0;
+const SORT = 'desc';
 
 @Injectable()
 export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number, Link> {
@@ -93,33 +94,16 @@ export class BlogLinkRepository implements CRUDRepository<BlogLinkEntity, number
         state: {
           contains: VideoState.Published
         },
-        OR: [
-          {
-            idAuthorLink: {
-              contains: idAuthPublication,
-            },
-          },
-          {
-            idAuthorLink: {
-              not: idAuthPublication
-            }
-          },
-          {
-            setTag: {
-              has: nameTag
-            }
-          },
-        ],
+        idAuthorLink: idAuthPublication ? {contains: idAuthPublication} : undefined,
+        setTag: nameTag ? {has: nameTag} : undefined
+      },
+      orderBy: {
+        datePublication: typeSort === TypeSort.DatePublication ? SORT : undefined,
+        countLike: typeSort === TypeSort.Like ? SORT : undefined,
+        comments: typeSort === TypeSort.Discussed ? {_count: SORT} : undefined
       },
       include: {
         comments: true
-      },
-      orderBy: {
-        _relevance: {
-          search: typeSort,
-          sort: 'desc',
-          fields: 'setTag'
-        }
       },
       skip: skip,
       take: limit,

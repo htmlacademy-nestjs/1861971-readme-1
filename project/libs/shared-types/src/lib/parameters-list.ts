@@ -1,7 +1,8 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {
   IsString,
-  IsEnum
+  IsEnum,
+  IsOptional
 } from 'class-validator';
 
 import { TypeSort } from "./type-sort.enum"
@@ -13,6 +14,7 @@ export class ParametersList  {
     description: 'Name of the author of the publication',
     example: 'Alex'
   })
+  @IsOptional()
   @IsString({message: MessageList.incorrectAuthPublication})
   public idAuthPublication?: string;
 
@@ -20,6 +22,7 @@ export class ParametersList  {
     description: 'Sorting type: "datePublication", "like", "discussed"',
     example: 'like'
   })
+  @IsOptional()
   @IsEnum(TypeSort,{message: MessageList.incorrectTypeSort})
   public typeSort?: TypeSort;
 
@@ -27,6 +30,7 @@ export class ParametersList  {
     description: 'Publication types: "video", "text", "quote", "photo", "link", "all"',
     example: 'photo'
   })
+  @IsOptional()
   @IsEnum(TypePublication,{message: MessageList.incorrectTypePublication})
   public typePublication?: TypePublication;
 
@@ -34,6 +38,7 @@ export class ParametersList  {
     description: 'Tage consist of one word',
     example: 'отдых'
   })
+  @IsOptional()
   @IsString({message: MessageList.incorrectNameTag})
   nameTag?: string
 }

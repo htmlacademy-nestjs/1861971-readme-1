@@ -9,7 +9,8 @@ import {
 import {
   ApiTags,
   ApiResponse,
-  ApiNotFoundResponse
+  ApiNotFoundResponse,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { PublicationLikeService } from './publication-like.service';
@@ -27,6 +28,12 @@ export class PublicationLikeController {
     private readonly publicationLikeService: PublicationLikeService
   ){}
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Like added or like removed',

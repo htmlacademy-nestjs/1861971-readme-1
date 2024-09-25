@@ -16,7 +16,8 @@ import {
   ApiFoundResponse,
   ApiNotFoundResponse,
   ApiParam,
-  ApiResponse
+  ApiResponse,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { PublicationService } from './publication.service';
@@ -34,6 +35,12 @@ export class PublicationController {
     private readonly publicationService: PublicationService
   ) {}
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiCreatedResponse({
     description: 'Video publication created',
     type: DetailsVideoRdo
@@ -70,6 +77,12 @@ export class PublicationController {
     return fillObject(Video, detaileAboutVideo);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Video deleted',
@@ -87,6 +100,12 @@ export class PublicationController {
     return fillObject(Video, informationDeleteVideo)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Video updated',
@@ -113,6 +132,26 @@ export class PublicationController {
     return fillObject(DetailsVideoRdo, video);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
+  @ApiParam({
+    name: 'idPublication',
+    description: 'Post id for repost',
+    example: '66aa47a11ee332582a197c8f'
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Video repost',
+    type: Video
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Video not found to add to repost'
+  })
   @UseGuards(JwtAuthGuard)
   @Post(':idPublication')
   public async repost(@Request() req, @Param('idPublication') idPublication: string) {

@@ -16,7 +16,8 @@ import {
 const LINE = 'www.youtube.com';
 const MIN_LENGTH_TAG = 3;
 const MAX_LENGTH_TAG = 10;
-const formatsList = ['jpg', 'png', 'jpeg']
+const regularForEng = /^[A-Z]/i;
+const regularForRus = /^[А-Я]/i;
 
 export function fillObject<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
   return plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
@@ -78,6 +79,27 @@ export class ValidationGapTag implements ValidatorConstraintInterface {
       if(itemLength >= defaultValues.two) {
         value = false
         return;
+      }
+    })
+    return value
+  }
+}
+
+@ValidatorConstraint({ name: 'setTag', async: false })
+export class ValidationInitialValueTag implements ValidatorConstraintInterface {
+  validate(tagsList: string[]) {
+    let value = false;
+    tagsList.forEach((item: string) => {
+      if(!value) {
+        value = regularForEng.test(item);
+      };
+
+      if(!value) {
+        value = regularForRus.test(item);
+      }
+
+      if(!value) {
+        return
       }
     })
     return value

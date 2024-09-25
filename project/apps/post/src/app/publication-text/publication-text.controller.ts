@@ -16,7 +16,8 @@ import {
   ApiFoundResponse,
   ApiNotFoundResponse,
   ApiParam,
-  ApiResponse
+  ApiResponse,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { PublicationTextService } from './publication-text.service';
@@ -34,6 +35,12 @@ export class PublicationTextController {
     private readonly publicationTextService: PublicationTextService
   ) {}
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiCreatedResponse({
     description: 'Video publication created',
     type: DetailsTextRdo
@@ -65,6 +72,12 @@ export class PublicationTextController {
     return fillObject(Text, detaileAboutText);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Text deleted',
@@ -82,6 +95,12 @@ export class PublicationTextController {
     return fillObject(Text, informationDeleteText);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Video updated',
@@ -103,6 +122,26 @@ export class PublicationTextController {
     return fillObject(DetailsTextRdo, editedText);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
+  @ApiParam({
+    name: 'idPublication',
+    description: 'Post id for repost',
+    example: '66aa47a11ee332582a197c8f'
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Text repost',
+    type: Text
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Text not found to add to repost'
+  })
   @UseGuards(JwtAuthGuard)
   @Post(':idPublication')
   public async repost(@Request() req, @Param('idPublication') idPublication: string) {

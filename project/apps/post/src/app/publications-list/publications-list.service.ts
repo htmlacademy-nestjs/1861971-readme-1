@@ -32,7 +32,7 @@ export class PublicationsListService {
   }
 
   public async index(parameter: ParametersList) {
-    const {typePublication = 'All', idAuthPublication = 'All', typeSort = TypeSort.DatePublication, nameTag = null} = parameter;
+    const {typePublication = 'All', idAuthPublication = null, typeSort = TypeSort.DatePublication, nameTag = null} = parameter;
 
     let datasList: Video[] | Text[] | Quote[] | Photo[] | Link[] = [];
     const blogList = [

@@ -7,7 +7,8 @@ export const MessageVideo = {
   setTag:{
     lengthArrayWithTags: 'The "setTag" is not valid. The max number of tags in the array is eight',
     lengthTag: 'The "setTag" is not valid. Min length 3, max length 10',
-    gapTag: 'The "setTag" is not valid. Tag does not contain a space'
+    gapTag: 'The "setTag" is not valid. Tag does not contain a space',
+    InitialValueTag: 'The "setTag" is not valid. Tag starts with a letter'
   },
   state: 'The "state" is not valid. The field value can be "Черновик", "Опубликована"'
 } as const;
@@ -28,7 +29,8 @@ export const MessageText = {
   setTag:{
     lengthArrayWithTags: 'The "setTag" is not valid. The max number of tags in the array is eight',
     lengthTag: 'The "setTag" is not valid. Min length 3, max length 10',
-    gapTag: 'The "setTag" is not valid. Tag does not contain a space'
+    gapTag: 'The "setTag" is not valid. Tag does not contain a space',
+    InitialValueTag: 'The "setTag" is not valid. Tag starts with a letter'
   },
   state: 'The "state" is not valid. The field value can be "Черновик", "Опубликована"'
 } as const;

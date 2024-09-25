@@ -8,7 +8,8 @@ import {
 import {
   ApiTags,
   ApiFoundResponse,
-  ApiQuery
+  ApiQuery,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { ParametersList, TypePublication } from '@project/shared-types';
@@ -72,6 +73,12 @@ export class PublicationsListController {
     return postsList
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiFoundResponse({
     description: 'Found for publications',
     type: [Video]

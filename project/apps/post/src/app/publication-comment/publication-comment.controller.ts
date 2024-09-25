@@ -12,7 +12,8 @@ import {
   ApiTags,
   ApiCreatedResponse,
   ApiFoundResponse,
-  ApiResponse
+  ApiResponse,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -30,6 +31,12 @@ export class PublicationCommentController {
     private readonly publicationCommentService: PublicationCommentService
   ) {}
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiCreatedResponse({
     description: 'Comment publication created',
     type: CommentRdo
@@ -58,6 +65,12 @@ export class PublicationCommentController {
     return fillObject(CommentRdo, commentsList)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Comment or comments deleted',
