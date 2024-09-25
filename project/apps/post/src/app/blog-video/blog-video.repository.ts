@@ -3,11 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { CRUDRepository } from '@project/util/util-types';
 import {
   Video,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogVideoEntity } from './blog-video-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { defaultValues } from '@project/shared-types';
+import { defaultValues, ParameterLike } from '@project/shared-types';
+
+let skip = 0;
+const SORT = 'desc';
 
 @Injectable()
 export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, number, Video> {
@@ -98,121 +103,158 @@ export class BlogVideoRepository implements CRUDRepository<BlogVideoEntity, numb
   }
 
   public async find(parameter: Parameter): Promise<Video[] | []> {
-    const {count, user, typeSort} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
-    const videosList = this.prisma.video.findMany({
-      take: Number(count)
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        idAuthorPublication: idAuthPublication ? {contains: idAuthPublication} : undefined,
+        setTag: nameTag ? {has: nameTag} : undefined
+      },
+      orderBy: {
+        datePublication: typeSort === TypeSort.DatePublication ? SORT : undefined,
+        countLike: typeSort === TypeSort.Like ? SORT : undefined,
+        comments: typeSort === TypeSort.Discussed ? {_count: SORT} : undefined
+      },
+      include: {
+        comments: true
+      },
+      skip: skip,
+      take: limit,
     })
 
-      return videosList;
+    skip += limit;
+
+    return videosList
   }
 
-  /*
-  public async addLike(parameter: ParameterLike): Promise<Video> {
-    const {nameUser, idPublication} = parameter;
-    let dataVideo: Video
-
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Video[] | []> {
+    const videosList = await this.prisma.video.findMany({
+      where: {
+        idAuthorPublication: {
+          contains: idAuthor
+        },
+        state: {
+          contains: VideoState.Draft
         }
-      });
-
-      if(existUser) {
-        dataVideo = await this.findById(idPublication);
-        dataVideo.countLike = dataVideo.countLike - defaultValues.one;
-
-        const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-        this.repositoryVideo = [
-          ...this.repositoryVideo.slice(defaultValues.zero, index),
-          dataVideo,
-          ...this.repositoryVideo.slice(index + 1),
-        ];
-
-        return dataVideo
-      }
-
-    dataVideo = await this.findById(idPublication);
-
-    if(! dataVideo) {
-      return null
-    }
-
-    const changeVideo = {
-      ... dataVideo,
-      countLike: 1
-    }
-
-    const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-      this.repositoryVideo = [
-        ...this.repositoryVideo.slice(defaultValues.zero, index),
-        changeVideo,
-        ...this.repositoryVideo.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changeVideo
+    skip += limit;
+
+    return videosList
   }
 
-  public async addComment(parameter: ParameterComment): Promise<Video> {
-    const {idComment, idPublication} = parameter;
+  public async addLike(parameter: ParameterLike): Promise<Video> {
+    const {idUser, idPublication} = parameter;
 
-    const dataVideo = await this.findById(idPublication);
+    const video = await this.prisma.video.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
 
-    if(! dataVideo) {
-      return null
-    }
-
-    dataVideo.countComments.push(idComment)
-
-    const changeVideo = {
-      ... dataVideo,
-      countComments: dataVideo.countComments
-    }
-
-    const index = this.repositoryVideo.findIndex((element) => element.id === idPublication);
-      this.repositoryVideo = [
-        ...this.repositoryVideo.slice(defaultValues.zero, index),
-        changeVideo,
-        ...this.repositoryVideo.slice(index + 1),
-      ];
-
-    return changeVideo
-  }
-
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
-
-    idList.forEach((value) => {
-
-      const index = this.repositoryVideo
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
-
-      if(index !== -1) {
-      indexId = this.repositoryVideo[index].countComments
-      .findIndex((id) => id === value)
+      if (! video) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryVideo[index].countComments = [
-          ...this.repositoryVideo[index].countComments.slice(0,indexId),
-          ...this.repositoryVideo[index].countComments.slice(indexId + 1)
+      if(!video.countLike.includes(idUser)) {
+        video.countLike.push(idUser)
+      } else {
+        const index = video.countLike.findIndex((element) => element === idUser)
+
+        video.countLike = [
+          ...video.countLike.slice(0, index),
+          ...video.countLike.slice(index+1)
         ]
+      }
 
-        indicator = true
+      const updeteVideo = await this.prisma.video.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: video.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updeteVideo
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Video | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.video.findFirst({
+      where: {
+        idAuthorPublication: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
       }
     })
 
-    return indicator
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorPublication: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.video.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
-*/
 }

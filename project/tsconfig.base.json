@@ -15,9 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@project/config-comment": ["libs/config-comment/src/index.ts"],
+      "@project/config-notify": ["libs/config/config-notify/src/index.ts"],
       "@project/config-post": ["libs/config/config-post/src/index.ts"],
       "@project/config-uploader": ["libs/config/config-uploader/src/index.ts"],
       "@project/config-users": ["libs/config/config-users/src/index.ts"],
+      "@project/exception-filter": ["libs/exception-filter/src/index.ts"],
       "@project/models-post": ["libs/models/models-post/src/index.ts"],
       "@project/shared-pipes": ["libs/shared-pipes/src/index.ts"],
       "@project/shared-types": ["libs/shared-types/src/index.ts"],

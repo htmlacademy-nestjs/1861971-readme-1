@@ -38,7 +38,7 @@ export class DetailsTextRdo {
     example: 'Vlad'
   })
   @Expose()
-  public authorPublication: string;
+  public idAuthorPublication: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -51,6 +51,7 @@ export class DetailsTextRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

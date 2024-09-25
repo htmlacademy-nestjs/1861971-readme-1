@@ -9,7 +9,12 @@ import {
 } from 'class-validator';
 
 import {MessageVideo} from '@project/validation-message';
-import {ValidationLinkVideo, ValidationLengthTag, ValidationGapTag} from '@project/util-core';
+import {
+  ValidationLinkVideo,
+  ValidationLengthTag,
+  ValidationGapTag,
+  ValidationInitialValueTag
+} from '@project/util-core';
 import {VideoState} from '@project/shared-types';
 
 const {
@@ -49,6 +54,9 @@ export class CreateVideoDto {
   })
   @IsOptional()
   @ArrayMaxSize(8, {message: setTag.lengthArrayWithTags})
+  @Validate(ValidationInitialValueTag,{
+    message: setTag.InitialValueTag
+  })
   @Validate(ValidationGapTag, {
     message: setTag.gapTag,
   })

@@ -11,7 +11,8 @@ import {
   ApiTags,
   ApiCreatedResponse,
   ApiResponse,
-  ApiParam
+  ApiParam,
+  ApiHeader
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -21,7 +22,6 @@ import { ChangPasswordUserDto } from './dto/chang-password-user.dto';
 import {fillObject} from '@project/util-core'
 import { UserRdo } from '../registration/rdo/user.rdo';
 import {MongoIdValidationPipe} from '@project/shared-pipes';
-import { JwtTokenRdo } from './rdo/jwt-token.rdo';
 
 @ApiTags('authorization')
 @Controller('user')
@@ -49,6 +49,12 @@ export class AuthorizationController {
     return accessToken
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiCreatedResponse({
     status: HttpStatus.OK,
     description: 'The user has successfully changed his password',

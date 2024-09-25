@@ -1,6 +1,6 @@
 export interface Comment {
   text: string;
-  authorComment: string;
+  idAuthorComment: string;
   idVideo?: number;
   idText?: number;
   idQuote?: number;

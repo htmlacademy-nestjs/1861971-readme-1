@@ -6,7 +6,9 @@ import {
   Patch,
   Body,
   Param,
-  HttpStatus
+  HttpStatus,
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,7 +16,8 @@ import {
   ApiFoundResponse,
   ApiNotFoundResponse,
   ApiParam,
-  ApiResponse
+  ApiResponse,
+  ApiHeader
 } from '@nestjs/swagger';
 
 import { PublicationTextService } from './publication-text.service';
@@ -22,6 +25,8 @@ import { CreateTextDto } from './dto/creat-text.dto';
 import {fillObject} from '@project/util-core';
 import { DetailsTextRdo } from './rdo/details-text.rdo';
 import { Text } from './rdo/text.rdo';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { TokenPayload } from '@project/shared-types';
 
 @ApiTags('text')
 @Controller('text')
@@ -30,13 +35,22 @@ export class PublicationTextController {
     private readonly publicationTextService: PublicationTextService
   ) {}
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiCreatedResponse({
     description: 'Video publication created',
     type: DetailsTextRdo
   })
+  @UseGuards(JwtAuthGuard)
   @Post('publication')
-  public async create(@Body() dto: CreateTextDto) {
-    const newText = await this.publicationTextService.create(dto);
+  public async create(@Request() req, @Body() dto: CreateTextDto) {
+    const {id} = req.user as TokenPayload
+
+    const newText = await this.publicationTextService.create(dto, id);
     return fillObject(DetailsTextRdo, newText);
   }
 
@@ -58,6 +72,12 @@ export class PublicationTextController {
     return fillObject(Text, detaileAboutText);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Text deleted',
@@ -68,12 +88,19 @@ export class PublicationTextController {
     description: 'Unique text id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   public async delete(@Param('id') id: string) {
     const informationDeleteText = await this.publicationTextService.delete(Number(id));
     return fillObject(Text, informationDeleteText);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Video updated',
@@ -88,10 +115,39 @@ export class PublicationTextController {
     description: 'Unique text id',
     example: '1'
   })
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   public async update(@Param('id') id: string, @Body() dto: CreateTextDto) {
-
     const editedText = await this.publicationTextService.update(Number(id), dto);
     return fillObject(DetailsTextRdo, editedText);
+  }
+
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'accessToken',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmx3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E'
+  })
+  @ApiParam({
+    name: 'idPublication',
+    description: 'Post id for repost',
+    example: '66aa47a11ee332582a197c8f'
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Text repost',
+    type: Text
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Text not found to add to repost'
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post(':idPublication')
+  public async repost(@Request() req, @Param('idPublication') idPublication: string) {
+    const {id} = req.user as TokenPayload
+
+    const publication = await this.publicationTextService.addRepost(idPublication, id);
+    return fillObject(Text, publication);
   }
 }

@@ -3,11 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { CRUDRepository } from '@project/util/util-types';
 import {
   Text,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogTextEntity } from './blog-text-entity';
 import { PrismaService } from '../prisma/prisma.service';
-import { defaultValues } from '@project/shared-types';
+import { defaultValues, ParameterLike } from '@project/shared-types';
+
+let skip = 0;
+const SORT = 'desc';
 
 @Injectable()
 export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number, Text> {
@@ -98,121 +103,158 @@ export class BlogTextRepository implements CRUDRepository<BlogTextEntity, number
   }
 
   public async find(parameter: Parameter): Promise<Text[] | []> {
-    const {count, user, typeSort} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
-    const textList = this.prisma.text.findMany({
-      take: Number(count)
+    const textsList = await this.prisma.text.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        idAuthorPublication: idAuthPublication ? {contains: idAuthPublication} : undefined,
+        setTag: nameTag ? {has: nameTag} : undefined
+      },
+      orderBy: {
+        datePublication: typeSort === TypeSort.DatePublication ? SORT : undefined,
+        countLike: typeSort === TypeSort.Like ? SORT : undefined,
+        comments: typeSort === TypeSort.Discussed ? {_count: SORT} : undefined
+      },
+      include: {
+        comments: true
+      },
+      skip: skip,
+      take: limit,
     })
 
-      return textList;
+    skip += limit;
+
+    return textsList;
   }
 
-  /*
-  public async addLike(parameter: ParameterLike): Promise<Text> {
-    const {nameUser, idPublication} = parameter;
-    let dataText: Text
-
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Text[] | []> {
+    const textsList = await this.prisma.text.findMany({
+      where: {
+        idAuthorPublication: {
+          contains: idAuthor
+        },
+        state: {
+          contains: VideoState.Draft
         }
-      });
-
-      if(existUser) {
-        dataText = await this.findById(idPublication);
-        dataText.countLike = dataText.countLike - defaultValues.one;
-
-        const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-        this.repositoryText = [
-          ...this.repositoryText.slice(defaultValues.zero, index),
-          dataText,
-          ...this.repositoryText.slice(index + 1),
-        ];
-
-        return dataText
-      }
-
-    dataText = await this.findById(idPublication);
-
-    if(! dataText) {
-      return null
-    }
-
-    const changeText = {
-      ... dataText,
-      countLike: dataText.countLike + defaultValues.one
-    }
-
-    const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-      this.repositoryText = [
-        ...this.repositoryText.slice(defaultValues.zero, index),
-        changeText,
-        ...this.repositoryText.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changeText
+    skip += limit;
+
+    return textsList
   }
 
-  public async addComment(parameter: ParameterComment): Promise<Text> {
-    const {idComment, idPublication} = parameter;
+  public async addLike(parameter: ParameterLike): Promise<Text> {
+    const {idUser, idPublication} = parameter;
 
-    const dataText = await this.findById(idPublication);
+    const text = await this.prisma.text.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
 
-    if(! dataText) {
-      return null
-    }
-
-    dataText.countComments.push(idComment)
-
-    const changeText = {
-      ... dataText,
-      countComments: dataText.countComments
-    }
-
-    const index = this.repositoryText.findIndex((element) => element.id === idPublication);
-      this.repositoryText = [
-        ...this.repositoryText.slice(defaultValues.zero, index),
-        changeText,
-        ...this.repositoryText.slice(index + 1),
-      ];
-
-    return changeText
-  }
-
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
-
-    idList.forEach((value) => {
-
-      const index = this.repositoryText
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
-
-      if(index !== -1) {
-      indexId = this.repositoryText[index].countComments
-      .findIndex((id) => id === value)
+      if (! text) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryText[index].countComments = [
-          ...this.repositoryText[index].countComments.slice(0,indexId),
-          ...this.repositoryText[index].countComments.slice(indexId + 1)
+      if(!text.countLike.includes(idUser)) {
+        text.countLike.push(idUser)
+      } else {
+        const index = text.countLike.findIndex((element) => element === idUser)
+
+        text.countLike = [
+          ...text.countLike.slice(0, index),
+          ...text.countLike.slice(index+1)
         ]
+      }
 
-        indicator = true
+      const updeteText = await this.prisma.text.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: text.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updeteText
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Text | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.text.findFirst({
+      where: {
+        idAuthorPublication: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
       }
     })
 
-    return indicator
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorPublication: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.text.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
-    */
 }

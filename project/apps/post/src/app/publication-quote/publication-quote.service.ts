@@ -13,16 +13,21 @@ export class PublicationQuoteService {
     private readonly blogQuoteRepository: BlogQuoteRepository
   ){}
 
-  public async create(dto: CreateQuoteDto) {
+  public async create(dto: CreateQuoteDto, idUser: string) {
+    const quote = {
+      ...dto,
+      idAuthorPublication: idUser
+    }
+
     let updateQuote: Quote
     const {setTag} = dto
 
     if(setTag) {
-    const returnQuoteWithTagsListToLowercase = castingToLowercase<Quote>(dto)
+    const returnQuoteWithTagsListToLowercase = castingToLowercase<Quote>(quote)
     updateQuote = removDuplicates (returnQuoteWithTagsListToLowercase)
     }
 
-    const quoteEntity = new BlogQuoteEntity(updateQuote ?? dto)
+    const quoteEntity = new BlogQuoteEntity(updateQuote ?? quote)
 
     return await this.blogQuoteRepository
       .create(quoteEntity);
@@ -56,5 +61,15 @@ public async update(id: number, dataQuote: Quote) {
   }
 
   return editedQuote
+}
+
+public async addRepost(idPublication: string, idUser: string) {
+  const publication = await this.blogQuoteRepository.repost(idPublication, idUser);
+
+  if (! publication) {
+    throw new NotFoundException(ValuePublicationQuote.QuoteNotFoundFoRepost);
+  }
+
+  return publication
 }
 }

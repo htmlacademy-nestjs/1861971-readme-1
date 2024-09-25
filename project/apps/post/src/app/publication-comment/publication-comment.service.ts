@@ -19,9 +19,10 @@ export class PublicationCommentService {
       .create(commentEntity);
   }
 
-  public async findById(idPost: number, count: string | number) {
-    const limit = count ?? defaultValues.commentCount;
-    const commentsList = await this.blogCommentRepository.findById(idPost, Number(limit));
+  public async findById(idPost: number) {
+    const limit = defaultValues.two;
+
+    const commentsList = await this.blogCommentRepository.findById(idPost, limit);
 
     return commentsList;
   }

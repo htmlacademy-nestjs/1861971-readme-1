@@ -1,15 +1,15 @@
 # Create a new user
-POST http://localhost:4000/api/user/register HTTP/1.1
+POST http://localhost:4500/api/user/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "vlad@v.com",
-  "firstName": "Vlad",
+  "email": "alex.v@yandex.ru",
+  "firstName": "Alexs",
   "password": "Volga34",
-  "avatar": "vlad.jpeg"
+  "avatar": "66eedb09427ebd98f6ff636e"
 }
 
 ###
 
 # Get user by ID
-GET http://localhost:4000/api/user/register/66cd70fe08e4005f86d14736 HTTP/1.1
+GET http://localhost:4500/api/user/register/66cd70fe08e4005f86d14736 HTTP/1.1

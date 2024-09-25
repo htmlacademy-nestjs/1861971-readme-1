@@ -25,7 +25,7 @@ export class DetailsPhotoRdo {
     example: 'Vlad'
   })
   @Expose()
-  public authorPhoto: string;
+  public idAuthorPhoto: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -38,6 +38,7 @@ export class DetailsPhotoRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

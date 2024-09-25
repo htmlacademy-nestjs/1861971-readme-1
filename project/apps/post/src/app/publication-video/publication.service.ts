@@ -13,16 +13,21 @@ export class PublicationService {
     private readonly blogVideoRepository: BlogVideoRepository,
   ){}
 
-  public async create(dto: CreateVideoDto) {
+  public async create(dto: CreateVideoDto, idUser: string) {
+    const video = {
+      ...dto,
+      idAuthorPublication: idUser
+    }
+
     let updateVideo: Video
     const {setTag} = dto
 
     if(setTag) {
-    const returnVideoWithTagsListToLowercase = castingToLowercase<Video>(dto)
+    const returnVideoWithTagsListToLowercase = castingToLowercase<Video>(video)
     updateVideo = removDuplicates (returnVideoWithTagsListToLowercase)
     }
 
-    const videoEntity = new BlogVideoEntity(updateVideo ?? dto)
+    const videoEntity = new BlogVideoEntity(updateVideo ?? video)
 
     return await this.blogVideoRepository
       .create(videoEntity);
@@ -56,5 +61,15 @@ public async update(id: number, dataVideo: Video) {
   }
 
   return editedVideo
+}
+
+public async addRepost(idPublication: string, idUser: string) {
+  const publication = await this.blogVideoRepository.repost(idPublication, idUser);
+
+  if (! publication) {
+    throw new NotFoundException(ValuePublication.VideoNotFoundFoRepost);
+  }
+
+  return publication
 }
 }

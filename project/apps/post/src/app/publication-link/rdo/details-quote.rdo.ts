@@ -28,10 +28,10 @@ export class DetailsLinkRdo {
   public setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    example: 'klo0987uy78'
   })
   @Expose()
-  public authorLink: string;
+  public idAuthorLink: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -44,6 +44,7 @@ export class DetailsLinkRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   public countLike?: number;
 
   @ApiProperty({

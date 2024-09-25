@@ -4,6 +4,7 @@ export class BlogLinkEntity implements Link {
   public link: string;
   public description: string;
   public setTag: string[];
+  public idAuthorLink: string;
   public state: string;
   public originolAuthor: '';
   public repost: '';
@@ -18,6 +19,7 @@ export class BlogLinkEntity implements Link {
       link: this.link,
       description: this.description,
       setTag: this.setTag,
+      idAuthorLink: this.idAuthorLink,
       state: this.state,
       originolAuthor: this.originolAuthor,
       repost: this.repost,
@@ -29,6 +31,7 @@ export class BlogLinkEntity implements Link {
     this.link = dataLink.link;
     this.description = dataLink.description;
     this.setTag = dataLink.setTag;
+    this.idAuthorLink = dataLink.idAuthorLink;
     this.state = dataLink.state;
     this.originolAuthor = '';
     this.repost = '';

@@ -1,10 +1,10 @@
 # Authorization user
-POST http://localhost:4000/api/user/authorization HTTP/1.1
+POST http://localhost:4500/api/user/authorization HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "vlad@v.com",
-  "password": "1984Volga"
+  "email": "alex.v@yandex.ru",
+  "password": "Volga34"
 }
 
 ###
@@ -12,9 +12,9 @@ Content-Type: application/json
 # Chang user password
 PATCH  http://localhost:4000/api/user/authorization/66cd70fe08e4005f86d14736 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmxhZEB2LmNvbSIsImZpcnN0TmFtZSI6IlZsYWQiLCJhdmF0YXIiOiJ2bGFkLmpwZWciLCJpYXQiOjE3MjQ3NjI0MDMsImV4cCI6MTcyNDc2MzYwM30.9-kJ7l-LofWzCsA4F4MxYhvejdMfu56-Sxxft1VVDO0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Y2Q3MGZlMDhlNDAwNWY4NmQxNDczNiIsImVtYWlsIjoidmxhZEB2LmNvbSIsImZpcnN0TmFtZSI6IlZsYWQiLCJhdmF0YXIiOiJ2bGFkLmpwZWciLCJpYXQiOjE3MjU2MDc3MDQsImV4cCI6MTcyNTYwODkwNH0.ReWjyAgo2dsO1Kpbqrn0tfpaFK89YLXM3J39pGXpG4E
 
 {
-  "password": "1984Volga",
-  "newPassword": "Volga34"
+  "password": "Volga34",
+  "newPassword": "V34Vlad"
 }

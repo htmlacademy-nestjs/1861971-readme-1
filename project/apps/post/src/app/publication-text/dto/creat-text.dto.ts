@@ -9,7 +9,11 @@ import {
 } from 'class-validator';
 
 import {MessageText} from '@project/validation-message';
-import {ValidationLengthTag, ValidationGapTag} from '@project/util-core';
+import {
+  ValidationLengthTag,
+  ValidationGapTag,
+  ValidationInitialValueTag
+} from '@project/util-core';
 import {VideoState} from '@project/shared-types';
 
 const {
@@ -62,6 +66,9 @@ export class CreateTextDto {
   })
   @IsOptional()
   @ArrayMaxSize(8, {message: setTag.lengthArrayWithTags})
+  @Validate(ValidationInitialValueTag,{
+    message: setTag.InitialValueTag
+  })
   @Validate(ValidationGapTag, {
     message: setTag.gapTag,
   })

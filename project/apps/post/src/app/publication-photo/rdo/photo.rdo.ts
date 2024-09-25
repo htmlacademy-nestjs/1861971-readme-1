@@ -22,10 +22,10 @@ export class Photo {
   setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    example: 'njkh7676h'
   })
   @Expose()
-  authorPublication: string;
+  idAuthorPhoto: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -38,6 +38,7 @@ export class Photo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

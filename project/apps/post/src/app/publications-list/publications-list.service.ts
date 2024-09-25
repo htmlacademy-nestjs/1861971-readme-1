@@ -12,23 +12,29 @@ import {
   Text,
   Quote,
   Photo,
-  Link
+  Link,
+  defaultValues,
+  TypeSort
 } from '@project/shared-types';
 
 @Injectable()
 export class PublicationsListService {
+  private readonly limit
+
   constructor(
     private readonly blogVideoRepository: BlogVideoRepository,
     private readonly blogTextRepository: BlogTextRepository,
     private readonly blogQuoteRepository: BlogQuoteRepository,
     private readonly blogPhotoRepository: BlogPhotoRepository,
     private readonly blogLinkRepository: BlogLinkRepository
-  ){}
+  ){
+    this.limit = defaultValues.two
+  }
 
-  public async index(parameter: ParametersList, count: string | undefined) {
-    const {user, typeSort, typePublication} = parameter;
+  public async index(parameter: ParametersList) {
+    const {typePublication = 'All', idAuthPublication = null, typeSort = TypeSort.DatePublication, nameTag = null} = parameter;
 
-    let datasList: Video[] | Text[] | Quote[] | Photo[] | Link[];
+    let datasList: Video[] | Text[] | Quote[] | Photo[] | Link[] = [];
     const blogList = [
       this.blogVideoRepository,
       this.blogTextRepository,
@@ -36,29 +42,50 @@ export class PublicationsListService {
       this.blogPhotoRepository,
       this.blogLinkRepository
     ];
-    const dataBlogList: (Video[] | Text[] | Quote[] | Photo[] | Link[])[] = []
 
     switch (typePublication) {
       case TypePublication.Video:
-        datasList = await this.blogVideoRepository.find({count, user, typeSort});
-        return datasList;
+        datasList = await this.blogVideoRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
+        break;
       case TypePublication.Text:
-        datasList = await this.blogTextRepository.find({count, user, typeSort});
-        return datasList;
+        datasList = await this.blogTextRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
+        break;
       case TypePublication.Quote:
-        datasList = await this.blogQuoteRepository.find({count, user, typeSort});
-        return datasList;
+        datasList = await this.blogQuoteRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
+        break;
       case TypePublication.Photo:
-        datasList = await this.blogPhotoRepository.find({count, user, typeSort});
-        return datasList;
+        datasList = await this.blogPhotoRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
+        break;
       case TypePublication.Link:
-        datasList = await this.blogLinkRepository.find({count, user, typeSort});
-        return datasList;
+        datasList = await this.blogLinkRepository.find({limit: this.limit, idAuthPublication, typeSort, nameTag});
+        break;
       default:
-        for await(const element of blogList){
-          const data = await element.find({count, user, typeSort})
-          data.forEach((element) => dataBlogList.push(element))
+        for(const element of blogList){
+          const data = await element.find({limit: this.limit, idAuthPublication, typeSort, nameTag})
+          data.forEach((element) => datasList.push(element))
         }
+        break;
     };
+
+    return datasList
+  }
+
+  public async indexDraft(idAuthor: string) {
+    const datasList: Array<Video | Text | Quote | Photo | Link> = [];
+
+    const blogList = [
+      this.blogVideoRepository,
+      this.blogTextRepository,
+      this.blogQuoteRepository,
+      this.blogPhotoRepository,
+      this.blogLinkRepository
+    ];
+
+        for(const element of blogList){
+          const data = await element.draftsList({limit: this.limit, idAuthor})
+          data.forEach((element) => datasList.push(element))
+        }
+
+    return datasList
   }
 }

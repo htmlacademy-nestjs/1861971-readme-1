@@ -3,7 +3,6 @@ import { ConfigType } from '@nestjs/config';
 import { ensureDir } from 'fs-extra';
 import { writeFile } from 'node:fs/promises';
 import * as crypto from 'node:crypto';
-import { extension } from 'mime-types';
 import dayjs from 'dayjs';
 
 import { appConfig } from '@project/config-uploader';
@@ -12,7 +11,6 @@ import { FileEntity } from './file-entity';
 
 type WritedFile = {
   hashName: string;
-  fileExtension: string;
   subDirectory: string;
   path: string;
 }
@@ -30,8 +28,8 @@ export class FileService {
     const subDirectory = `${year}/${month}`;
 
     const uuid = crypto.randomUUID();
-    const fileExtension = extension(file.mimetype);
-    const hashName = `${uuid}.${fileExtension}`;
+    const fileExtension = file.originalname.split('.');
+    const hashName = `${uuid}.${fileExtension[fileExtension.length -1]}`;
 
     const uploadDirectoryPath = `${uploadDirectory}/${subDirectory}`;
     const destinationPath = `${uploadDirectoryPath}/${hashName}`;
@@ -41,7 +39,6 @@ export class FileService {
 
     return {
       hashName,
-      fileExtension,
       subDirectory,
       path: `/${subDirectory}/${hashName}`,
     };

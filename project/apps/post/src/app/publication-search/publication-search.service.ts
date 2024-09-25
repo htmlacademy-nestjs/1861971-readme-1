@@ -21,11 +21,13 @@ export class PublicationSearchService {
     ];
   }
 
-  public async index(word: string) {
+  public async index(titlePublication: string) {
+    const updateTitiePublication = titlePublication.replace(/[^A-Z^А-Я\d\s]/gi, '')
+    const wordsList = updateTitiePublication.split(' ').join(' | ')
     const publicationList: (Video | Text)[] = [];
 
     for await(const element of this.blogList) {
-      const dataList = await element.findByWord(word);
+      const dataList = await element.findByWord(wordsList);
 
       if(dataList.length !== 0) {
         dataList.forEach((element:Video | Text) => publicationList.push(element))

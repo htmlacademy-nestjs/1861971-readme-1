@@ -40,7 +40,11 @@
         "apps/registration-user-e2e/**/*",
         "apps/user-e2e/**/*",
         "apps/post-e2e/**/*",
-        "apps/uploader-e2e/**/*"
+        "apps/uploader-e2e/**/*",
+        "apps/notify-e2e/**/*",
+        "apps/notify/notify-e2e/**/*",
+        "apps/notify-e2e/**/*",
+        "apps/bff-e2e/**/*"
       ]
     }
   ]

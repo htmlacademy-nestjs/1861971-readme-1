@@ -3,10 +3,16 @@ import { Injectable } from '@nestjs/common';
 import {CRUDRepository} from '@project/util/util-types';
 import {
   Photo,
-  Parameter
+  Parameter,
+  VideoState,
+  TypeSort
  } from '@project/shared-types';
 import { BlogPhotoEntity } from './blog-photo-entity';
 import { PrismaService } from '../prisma/prisma.service';
+import { ParameterLike, defaultValues } from '@project/shared-types';
+
+let skip = 0;
+const SORT = 'desc';
 
 @Injectable()
 export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, number, Photo>{
@@ -81,120 +87,166 @@ export class BlogPhotoRepository implements CRUDRepository<BlogPhotoEntity, numb
   }
 
   public async find(parameter: Parameter): Promise<Photo[] | []> {
-    const {count, user, typeSort} = parameter;
+    const {limit, idAuthPublication, typeSort, nameTag} = parameter;
 
-    const photoList = this.prisma.photo.findMany({
-      take: Number(count)
+    const photoList = await this.prisma.photo.findMany({
+      where: {
+        state: {
+          contains: VideoState.Published
+        },
+        idAuthorPhoto: idAuthPublication ? {contains: idAuthPublication} : undefined,
+        setTag: nameTag ? {has: nameTag} : undefined
+      },
+      orderBy: {
+        datePublication: typeSort === TypeSort.DatePublication ? SORT : undefined,
+        countLike: typeSort === TypeSort.Like ? SORT : undefined,
+        comments: typeSort === TypeSort.Discussed ? {_count: SORT} : undefined
+      },
+      include: {
+        comments: true
+      },
+      skip: skip,
+      take: limit,
     })
+
+    if(typeSort === TypeSort.Like) {
+      (await photoList).sort((a, b) => b.countLike.length - a.countLike.length)
+    }
+
+    if(typeSort === TypeSort.Discussed) {
+      (await photoList).sort((a, b) => b.comments.length - a.comments.length)
+    }
+
+    skip += limit;
 
     return photoList;
   }
-/*
-  public async addLike(parameter: ParameterLike): Promise<Photo> {
-    const {nameUser, idPublication} = parameter;
-    let dataPhoto: Photo
 
-    const existUser = this.repositoryLike
-      .find((element) => {
-        if(element.nameUser === nameUser && element.idPublication === idPublication){
-          return element
+  public async draftsList({limit, idAuthor}: {limit: number, idAuthor: string}): Promise<Photo[] | []> {
+    const photosList = await this.prisma.photo.findMany({
+      where: {
+        idAuthorPhoto: {
+          contains: idAuthor
+        },
+        state: {
+          contains: VideoState.Draft
         }
-      });
-
-      if(existUser) {
-        dataPhoto = await this.findById(idPublication);
-        dataPhoto.countLike = dataPhoto.countLike - defaultValues.one;
-
-        const index = this.repositoryPhoto.findIndex((element) => element.id === idPublication);
-        this.repositoryPhoto = [
-          ...this.repositoryPhoto.slice(defaultValues.zero, index),
-          dataPhoto,
-          ...this.repositoryPhoto.slice(index + 1),
-        ];
-
-        return dataPhoto
-      }
-
-    dataPhoto = await this.findById(idPublication);
-
-    if(! dataPhoto) {
-      return null
-    }
-
-    const changePhoto = {
-      ... dataPhoto,
-      countLike: dataPhoto.countLike + defaultValues.one
-    }
-
-    const index = this.repositoryPhoto.findIndex((element) => element.id === idPublication);
-      this.repositoryPhoto = [
-        ...this.repositoryPhoto.slice(defaultValues.zero, index),
-        changePhoto,
-        ...this.repositoryPhoto.slice(index + 1),
-      ];
-
-    this.repositoryLike.push({
-      nameUser,
-      idPublication
+      },
+      include: {
+        comments: true
+      },
+      orderBy: [
+        {
+          datePublication: 'desc'
+        }
+      ],
+      skip: skip,
+      take: limit,
     })
 
-    return changePhoto
+    skip += limit;
+
+    return photosList
   }
 
-  public async addComment(parameter: ParameterComment): Promise<Photo> {
-    const {idComment, idPublication} = parameter;
+  public async addLike(parameter: ParameterLike): Promise<Photo> {
+    const {idUser, idPublication} = parameter;
 
-    const dataPhoto = await this.findById(idPublication);
+    const photo = await this.prisma.photo.findFirst({
+      where: {
+        id: idPublication
+      }
+      })
 
-    if(! dataPhoto) {
-      return null
-    }
-
-    dataPhoto.countComments.push(idComment)
-
-    const changePhoto = {
-      ... dataPhoto,
-      countComments: dataPhoto.countComments
-    }
-
-    const index = this.repositoryPhoto.findIndex((element) => element.id === idPublication);
-      this.repositoryPhoto = [
-        ...this.repositoryPhoto.slice(defaultValues.zero, index),
-        changePhoto,
-        ...this.repositoryPhoto.slice(index + 1),
-      ];
-
-    return changePhoto
-  }
-
-  public async deleteComment(idList: string[]): Promise<boolean> {
-    let indicator = false;
-    let indexId: number
-
-    idList.forEach((value) => {
-
-      const index = this.repositoryPhoto
-      .findIndex(({countComments}) => {
-        const element = countComments.find((id) => id === value)
-        return element === value
-      });
-
-      if(index !== -1) {
-      indexId = this.repositoryPhoto[index].countComments
-      .findIndex((id) => id === value)
+      if (! photo) {
+        return null
       }
 
-      if(index !== -1) {
-        this.repositoryPhoto[index].countComments = [
-          ...this.repositoryPhoto[index].countComments.slice(0,indexId),
-          ...this.repositoryPhoto[index].countComments.slice(indexId + 1)
+      if(!photo.countLike.includes(idUser)) {
+        photo.countLike.push(idUser)
+      } else {
+        const index = photo.countLike.findIndex((element) => element === idUser)
+
+        photo.countLike = [
+          ...photo.countLike.slice(0, index),
+          ...photo.countLike.slice(index+1)
         ]
+      }
 
-        indicator = true
+      const updetePhoto = await this.prisma.photo.update({
+        where: {
+          id: idPublication
+        },
+        data: {
+          countLike: photo.countLike
+        },
+        include: {
+          comments: true
+        }
+      })
+
+      return updetePhoto
+  }
+
+  public async repost(idPublication: string, idUser: string): Promise<Photo | null> {
+    let publication = null;
+    let idComments = [];
+
+    publication = await this.prisma.photo.findFirst({
+      where: {
+        idAuthorPhoto: {
+          search: idUser
+        },
+        originolId: {
+          search: idPublication
+        }
+      },
+      include: {
+        comments: true
       }
     })
 
-    return indicator
+    if(publication){
+      return publication
+    }
+
+    publication = await this.findById(Number(idPublication))
+
+    if(!publication) {
+      return publication
+    }
+
+    const newPublication = {
+      ...publication,
+      idAuthorPhoto: idUser,
+      dateCreation: publication.datePublication,
+      originolAuthor: publication.idAuthorPublication,
+      repost: defaultValues.repost,
+      originolId: String(publication.id)
+    }
+
+    delete newPublication.id
+
+    if(newPublication.comments.length !== 0) {
+      newPublication.comments.forEach(({id}) => {
+        idComments.push({id})
+      });
+    }else{
+      idComments = newPublication.comments
+    }
+
+    publication = await this.prisma.photo.create({
+      data: {
+        ...newPublication,
+        comments: {
+        connect: idComments
+      }
+    },
+    include: {
+      comments: true
+    }
+    })
+
+    return publication
   }
-    */
 }

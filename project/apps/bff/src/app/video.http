@@ -1,0 +1,47 @@
+# Publication a new video
+POST http://localhost:3500/api/video/publication HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjEzODI2ZWZmNDA4ZTg3MDI5MTE4NCIsImVtYWlsIjoiYWxleC52QHlhbmRleC5ydSIsImZpcnN0TmFtZSI6IkFsZXhzIiwiYXZhdGFyIjoiNjZlZWRiMDk0MjdlYmQ5OGY2ZmY2MzZlIiwiaWF0IjoxNzI3MDg0NjQzLCJleHAiOjE3MjcwODU4NDN9.ebM0ptdm7wb3rr3DbsWIxCx1Df3IhJgTt1ko34V8ne4
+
+{
+  "namePublication": "Alex среди гор. Открывается прекрасный вид.",
+  "linkVideo": "https://www.youtube.com/watch?v=qgKkznHL84c",
+  "setTag": [
+    "Горы",
+    "Влад",
+    "Иван",
+    "Горы"
+    ],
+  "state": "Черновик"
+}
+
+###
+
+# Get video by ID
+GET http://localhost:3500/api/video/15 HTTP/1.1
+
+###
+
+# Delete video by ID
+DELETE  http://localhost:3500/api/video/16 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjAyY2NmMGJiNGY2OGFlNjBkYWNjNSIsImVtYWlsIjoic3ZldGEudkB5YW5kZXgucnUiLCJmaXJzdE5hbWUiOiJTdmV0YSIsImF2YXRhciI6IjY2ZWVkYjA5NDI3ZWJkOThmNmZmNjM2ZSIsImlhdCI6MTcyNzAxNjE2MSwiZXhwIjoxNzI3MDE3MzYxfQ.76GAIMiLdQVFe3dZ3L-uM4cpvw1Y62L-G_ktdxZUNOc
+
+###
+
+# Upgrade video by ID
+PATCH   http://localhost:3500/api/video/16 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjAyY2NmMGJiNGY2OGFlNjBkYWNjNSIsImVtYWlsIjoic3ZldGEudkB5YW5kZXgucnUiLCJmaXJzdE5hbWUiOiJTdmV0YSIsImF2YXRhciI6IjY2ZWVkYjA5NDI3ZWJkOThmNmZmNjM2ZSIsImlhdCI6MTcyNzAxNjE2MSwiZXhwIjoxNzI3MDE3MzYxfQ.76GAIMiLdQVFe3dZ3L-uM4cpvw1Y62L-G_ktdxZUNOc
+
+{
+  "namePublication": "Влад, кросивые горы. Открывается прекрасный вид.",
+  "linkVideo": "https://www.youtube.com/watch?v=qgKkznHL84c",
+  "setTag": ["Горы"],
+  "state": "Опубликована"
+}
+
+###
+
+# Repost a video
+POST  http://localhost:3500/api/video/3 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjEzODI2ZWZmNDA4ZTg3MDI5MTE4NCIsImVtYWlsIjoiYWxleC52QHlhbmRleC5ydSIsImZpcnN0TmFtZSI6IkFsZXhzIiwiYXZhdGFyIjoiNjZlZWRiMDk0MjdlYmQ5OGY2ZmY2MzZlIiwiaWF0IjoxNzI3MDg2NTk1LCJleHAiOjE3MjcwODc3OTV9.v9J1naVteN7E9fQj1_xmw72KLx-EdMa1Q4rJmonw31g

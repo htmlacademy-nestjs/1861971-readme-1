@@ -35,10 +35,10 @@ export class Text {
   setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    example: '7880op09'
   })
   @Expose()
-  authorPublication: string;
+  idAuthorPublication: string;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -51,6 +51,7 @@ export class Text {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

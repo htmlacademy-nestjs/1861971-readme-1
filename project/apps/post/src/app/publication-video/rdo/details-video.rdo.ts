@@ -1,6 +1,8 @@
 import { Expose, Transform } from 'class-transformer';
 import {ApiProperty} from '@nestjs/swagger';
 
+import { UserRdo } from './user.rdo';
+
 export class DetailsVideoRdo {
   @ApiProperty({
     description: 'Unique video id',
@@ -29,10 +31,10 @@ export class DetailsVideoRdo {
   public setTag: string[];
 
   @ApiProperty({
-    example: 'Vlad'
+    type: UserRdo
   })
   @Expose()
-  public authorPublication: string;
+  public nameAuthor: UserRdo;
 
   @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
@@ -45,6 +47,7 @@ export class DetailsVideoRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   public countLike: number;
 
   @ApiProperty({

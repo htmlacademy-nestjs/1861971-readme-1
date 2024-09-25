@@ -5,5 +5,6 @@ export const defaultValues = {
   two: 2,
   typeSort: 'datePublication',
   commentCount: 50,
-  countSearch: 20
+  countSearch: 20,
+  repost: 'Репост'
 };

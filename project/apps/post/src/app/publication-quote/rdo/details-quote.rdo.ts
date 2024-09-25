@@ -30,6 +30,12 @@ export class DetailsQuoteRdo {
   public authorQuote: string;
 
   @ApiProperty({
+    example: '876947666555dfgy45'
+  })
+  @Expose()
+  public idAuthorPublication: string;
+
+  @ApiProperty({
     description: 'Your publicashon corresponds to the type of publication',
     example: 'quote'
   })
@@ -40,6 +46,7 @@ export class DetailsQuoteRdo {
     example: 2
   })
   @Expose()
+  @Transform(({ value }) => value.length)
   countLike: number;
 
   @ApiProperty({

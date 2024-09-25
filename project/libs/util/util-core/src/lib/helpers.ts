@@ -1,6 +1,7 @@
 import {plainToInstance, ClassConstructor} from 'class-transformer';
 import {compare, genSalt, hash} from 'bcrypt';
 import {ValidatorConstraint, ValidatorConstraintInterface} from 'class-validator';
+import {Types} from 'mongoose';
 
 import {SALT_ROUNDS} from '@project/util/util-types'
 import {
@@ -15,7 +16,8 @@ import {
 const LINE = 'www.youtube.com';
 const MIN_LENGTH_TAG = 3;
 const MAX_LENGTH_TAG = 10;
-const formatsList = ['jpg', 'png', 'jpeg']
+const regularForEng = /^[A-Z]/i;
+const regularForRus = /^[А-Я]/i;
 
 export function fillObject<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
   return plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
@@ -37,6 +39,13 @@ export const getMongoURI = (
   host: string,
   port: string
 ): string => `mongodb://${username}:${password}@${host}:${port}/`;
+
+export const getRabbitMQConnectionString = (
+  user: string,
+  password: string,
+  host: string,
+  port: string
+): string => `amqp://${user}:${password}@${host}:${port}`;
 
 @ValidatorConstraint({ name: 'linkVideo', async: false })
 export class ValidationLinkVideo implements ValidatorConstraintInterface {
@@ -76,19 +85,35 @@ export class ValidationGapTag implements ValidatorConstraintInterface {
   }
 }
 
-@ValidatorConstraint({ name: 'photo', async: false })
-export class ValidationPhoto implements ValidatorConstraintInterface {
-  validate(photo: string) {
+@ValidatorConstraint({ name: 'setTag', async: false })
+export class ValidationInitialValueTag implements ValidatorConstraintInterface {
+  validate(tagsList: string[]) {
     let value = false;
-    const valuesList: string[] = photo.split('.')
-    const nameFormat = valuesList[valuesList.length -1]
+    tagsList.forEach((item: string) => {
+      if(!value) {
+        value = regularForEng.test(item);
+      };
 
-    formatsList.forEach((item) => {
-      if(item === nameFormat) {
-        value = true;
+      if(!value) {
+        value = regularForRus.test(item);
+      }
+
+      if(!value) {
         return
       }
     })
+    return value
+  }
+}
+
+@ValidatorConstraint({ name: 'photo', async: false })
+export class ValidationIdPhoto implements ValidatorConstraintInterface {
+  validate(photo: string) {
+    let value = true;
+
+    if (!Types.ObjectId.isValid(photo)) {
+      value = false
+    }
 
     return value
   }
