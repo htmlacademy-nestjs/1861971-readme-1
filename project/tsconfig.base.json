@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@project/config-bff": ["libs/config/config-bff/src/index.ts"],
       "@project/config-comment": ["libs/config-comment/src/index.ts"],
       "@project/config-notify": ["libs/config/config-notify/src/index.ts"],
       "@project/config-post": ["libs/config/config-post/src/index.ts"],

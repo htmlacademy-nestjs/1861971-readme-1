@@ -1,0 +1,9 @@
+{
+  "name": "config-bff",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/config/config-bff/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project config-bff --web",
+  "targets": {}
+}
