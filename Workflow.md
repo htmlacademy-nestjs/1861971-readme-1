@@ -10,6 +10,51 @@ npm install
 
 Данная команда запустит процесс установки зависимостей проекта из **npm**.
 
+### Запуск монорепозитория
+
+Для запуска проекта и установок для проекта как описано ниже, выполняется из директории project.
+
+#### Создание .env файлов для переменных окружения
+
+Перейдите в директорию project, в микросервисах: bff, notify, post, uploader, user расположенных .project/apps, создайте .env файл с переменными окружениями как приведен в файле .env.example.
+В project/libs/models/src/prisma, создайте .env файл с переменными окружения как приведенв файле .env.example.
+
+#### Запуск файла docker-compose.dev.yml
+
+Перейдите в директорию project, воспользуйтесь следующими командами:
+```bash
+docker compose --file ./apps/notify/docker-compose.dev.yml --env-file ./apps/notify/.env --project-name "readme-notify" up -d
+docker compose --file ./apps/post/docker-compose.dev.yml --env-file ./apps/post/.env --project-name "readme-post" up -d
+docker compose --file ./apps/uploader/docker-compose.dev.yml --env-file ./apps/uploader/.env --project-name "readme-uploader" up -d
+docker compose --file ./apps/user/docker-compose.dev.yml --env-file ./apps/user/.env --project-name "readme-user" up -d
+```
+
+#### Генерация типов для Prisma Client
+
+Перейдите в директорию project, воспользуйтесь следующими командами:
+для Windows:
+```bash 
+npx nx run post:db:generate
+```
+для MacOS и Linux:
+```bash 
+nx run post:db:generate
+```
+#### Запуск монорепозитория
+
+Перейдите в директорию project, воспользуйтесь следующей командой:
+для Windows:
+```bash 
+npx nx serve ...
+```
+для MacOS и Linux:
+```bash 
+nx serve ...
+```
+Вместо многоточий укажите микросервис, пример: npx nx serve post.
+
+Для запуска разных микросервисов воспользуйтесь той же командой как указано выше, но в разных bash.
+
 ### Сценарии
 
 После создания проекта вам доступны следующие сценарии.
