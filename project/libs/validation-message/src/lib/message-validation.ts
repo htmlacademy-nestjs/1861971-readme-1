@@ -124,11 +124,9 @@ export const MessageSubscriber = {
 } as const;
 
 export const UploaderAvatar = {
-  incorrectSize: '500 KB size limits',
-  incorrectType: 'Allowed formats: jpeg, png'
+  incorrect: 'The avatar is not valid. Allowed formats: jpeg, png or the file size exceeds 500 KB'
 } as const;
 
 export const UploaderPhoto = {
-  incorrectSize: '1 MB size limits',
-  incorrectType: 'Allowed formats: jpg, png'
+  incorrect: 'The photo is not valid. Allowed formats: jpg, png or the file size exceeds 1000000 KB'
 }

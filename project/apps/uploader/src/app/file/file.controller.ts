@@ -1,12 +1,10 @@
 import {
   Controller,
-  FileTypeValidator,
   Get,
   Inject,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
   Post,
+  Body,
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
@@ -19,6 +17,7 @@ import {
   ApiFoundResponse,
   ApiNotFoundResponse
 } from '@nestjs/swagger';
+import { Buffer } from 'node:buffer';
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
@@ -27,7 +26,6 @@ import { UploadedFileRdo } from './rdo/uploaded-file.rdo';
 import { appConfig } from '@project/config-uploader';
 import { ConfigType } from '@nestjs/config';
 import {MongoIdValidationPipe} from '@project/shared-pipes';
-import { UploaderAvatar, UploaderPhoto } from '@project/validation-message';
 import { FileTypeValidatorPipe } from '@project/shared-pipes';
 
 
@@ -48,14 +46,17 @@ export class FileController {
   })
   @Post('/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
-  public async uploadAvatar(@UploadedFile(new FileTypeValidatorPipe(), new ParseFilePipe({
-    validators: [
-      new MaxFileSizeValidator({maxSize: 500000, message: UploaderAvatar.incorrectSize}),
-    ],
-    fileIsRequired: false
-  })) file: Express.Multer.File
+  public async uploadAvatar(
+    @UploadedFile(new FileTypeValidatorPipe()) file: Express.Multer.File,
+    @Body(new FileTypeValidatorPipe()) body
   ) {
-    const newFile = await this.fileService.saveFile(file);
+    const payload = file ? file : body
+    //const {size, buffer} = payload
+
+    //const buf = Buffer.alloc(Number(size), buffer);
+    //const newPayload = {...payload, buffer: buf}
+
+    const newFile = await this.fileService.saveFile(payload);
     const path = `${this.applicationConfig.serveRoot}${newFile.path}`;
     return fillObject(UploadedFileRdo, Object.assign(newFile, { path }));
   }
@@ -67,14 +68,13 @@ export class FileController {
   })
   @Post('/photo')
   @UseInterceptors(FileInterceptor('photo'))
-  public async uploadPhoto(@UploadedFile(new FileTypeValidatorPipe(), new ParseFilePipe({
-    validators: [
-      new MaxFileSizeValidator({maxSize: 1000000, message: UploaderPhoto.incorrectSize}),
-      new FileTypeValidator({fileType: 'image/png'})
-    ]
-  })) file: Express.Multer.File
+  public async uploadPhoto(@UploadedFile(
+    new FileTypeValidatorPipe()) file: Express.Multer.File,
+    @Body(new FileTypeValidatorPipe()) body
   ) {
-    const newFile = await this.fileService.saveFile(file);
+    const payload = file ? file : body
+
+    const newFile = await this.fileService.saveFile(payload);
     const path = `${this.applicationConfig.serveRoot}${newFile.path}`;
     return fillObject(UploadedFileRdo, Object.assign(newFile, { path }));
   }
