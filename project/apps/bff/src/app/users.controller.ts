@@ -7,10 +7,11 @@ import {
   Patch,
   UseFilters,
   UseInterceptors,
-  Req
+  Req,
+  UploadedFile
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import {Request} from 'express';
+import {Request, Express} from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import 'multer';
 
@@ -37,12 +38,13 @@ export class UserController {
     private readonly httpService: HttpService
   ) {}
 
-  @UseInterceptors(FileInterceptor('avatar'))
   @Post('avatar')
-  public async uploadAvatar(@Req() {file}: Request): Promise<UploadedFileRdo> {
+  @UseInterceptors(FileInterceptor('avatar'))
+  public async uploadAvatar(@UploadedFile() file: Express.Multer.File): Promise<UploadedFileRdo> {
+
     const {data} = await this.httpService.axiosRef
     .post<UploadedFileRdo>(`${ApplicationServiceURL.Uploader}${ApplicationServiceURL.Avatar}`,
-      file,
+      {...file, buffer: file.buffer.toString('hex')},
       {
       headers: {
         'Content-Type': 'multipart/form-data'
